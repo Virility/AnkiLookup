@@ -1,0 +1,71 @@
+.card {
+	font-family: "Segoe UI";
+	font-style: normal;
+	font-size: 1.8em;
+	font-stretch: normal;
+	background-color: #333333;
+	color: white;
+	text-rendering: optimizeLegibility;
+	padding: 16px;
+	overflow: hidden;
+}
+
+.word {
+	color: #ffffff;
+	font-size: 28px;
+	font-weight: 400;
+	text-align: left;
+	margin-top: 0px;
+}
+.blocks {
+	padding-bottom: 30px;
+}
+.block {
+	white-space: nowrap;
+	padding-bottom: 4px;
+}
+.label {
+	display: inline-block;
+	color: orange;
+	font-size: 16px;
+	font-weight: 700;
+	margin: 0;
+	vertical-align: top;
+	float: left;
+	width: auto;
+}
+.scope-container {
+	margin-top: 0px;
+	margin-left: 30px;
+	list-style-type: none;
+}
+.scope {
+	margin-left: 16px;
+	margin-right: 16px;
+	white-space: normal;
+}
+
+.example-group {
+	display: block:
+	overflow: hidden;
+	white-space: nowrap;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	margin-right: 60px;
+	font-size: .7em;
+}
+.example-group > div {
+	padding-right: 5px;
+	display: inline-block;
+	vertical-align: top;
+}
+.example {
+	color: #B5E642;
+	display: inline-block;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	white-space: normal;
+}
+.highlighted {
+	color: #009dff;
+}

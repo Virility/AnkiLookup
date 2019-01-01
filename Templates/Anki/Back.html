@@ -1,0 +1,11 @@
+{{FrontSide}}
+<hr id=answer>
+<div id="back">{{Back}}</div>
+
+<script>
+	var tempElement = document.createElement('textarea');
+	tempElement.innerHTML =  unescape('{{Back}}');
+	
+	var backElement = document.getElementById("back");
+	backElement.innerHTML = tempElement.value;
+</script>
