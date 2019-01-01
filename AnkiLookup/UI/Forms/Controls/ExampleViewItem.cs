@@ -11,8 +11,8 @@ namespace AnkiLookup.UI.Controls
 
         public int ExampleIndex { get; set; }
 
-
         private CambridgeWordInfo wordInfo;
+
         public CambridgeWordInfo WordInfo {
             get { return wordInfo; }
             set {
@@ -39,7 +39,6 @@ namespace AnkiLookup.UI.Controls
 
         public ExampleViewItem()
         {
-
         }
     }
 }

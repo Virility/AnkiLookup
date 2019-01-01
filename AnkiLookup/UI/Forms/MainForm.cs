@@ -12,9 +12,6 @@ using AnkiLookup.UI.Models;
 using AnkiLookup.UI.Controls;
 using System.Linq;
 using AnkiLookup.Core.Extensions;
-using System.Net;
-using AnkiSpanishDictWordOfTheDay.Core.Models;
-using System.Web;
 
 namespace AnkiLookup.UI.Forms
 {
@@ -28,8 +25,8 @@ namespace AnkiLookup.UI.Forms
         private readonly IWordInfoFormatter _textFormatter;
         private readonly Comparer<string> _comparer;
         private readonly string _wordsDataPath;
+        private readonly int _maxConcurrentLookups = 10;
 
-        private int _maxConcurrentLookups = 10;
         private bool _changeMade;
 
         public MainForm()
@@ -55,7 +52,6 @@ namespace AnkiLookup.UI.Forms
                 .Where(wordInfo => wordInfo != null)
                 .OrderBy(a => a.InputWord, _comparer).ToArray();
 
-            //if (wordInfos.Length != 0)
             File.WriteAllBytes(_wordsDataPath, CambridgeWordInfo.Serialize(wordInfos));
         }
 
