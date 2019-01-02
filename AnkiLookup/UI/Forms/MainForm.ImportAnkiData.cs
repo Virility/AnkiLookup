@@ -2,6 +2,7 @@
 using AnkiLookup.UI.Controls;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -86,7 +87,10 @@ namespace AnkiLookup.UI.Forms
             }
 
             if (!await _ankiProvider.CreateDeck(_ankiProvider.DeckName))
+            {
+                Debug.WriteLine("Could not create deck.");
                 return;
+            }
 
             var wordInfos = new List<CambridgeWordInfo>();
             var addedBeforeWordInfos = new List<CambridgeWordInfo>();
@@ -105,6 +109,7 @@ namespace AnkiLookup.UI.Forms
                 var (Success, ErrorWords) = await _ankiProvider.AddCards(_ankiProvider.DeckName, words, _htmlFormatter);
                 if (Success)
                 {
+                    result = true;
                     errorWords.AddRange(ErrorWords);
                     foreach (WordViewItem wordViewItem in wordViewItemsToProcess)
                     {
