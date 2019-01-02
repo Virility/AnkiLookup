@@ -102,11 +102,10 @@ namespace AnkiLookup.UI.Forms
             else if (wordInfos.Count > 1)
             {
                 var words = wordInfos.OrderBy(a => a.InputWord, _comparer).ToList();
-                var tupleResult = await _ankiProvider.AddCards(_ankiProvider.DeckName, words, _htmlFormatter);
-                result = tupleResult.Item1;
-                if (result)
+                var (Success, ErrorWords) = await _ankiProvider.AddCards(_ankiProvider.DeckName, words, _htmlFormatter);
+                if (Success)
                 {
-                    errorWords.AddRange(tupleResult.Item2);
+                    errorWords.AddRange(ErrorWords);
                     foreach (WordViewItem wordViewItem in wordViewItemsToProcess)
                     {
                         if (errorWords.Contains(wordViewItem.WordInfo.InputWord))

@@ -209,7 +209,7 @@ namespace AnkiLookup.Core.Providers
             return ids;
         }
 
-        public async Task<Tuple<bool, List<string>>> AddCards(string deckName, List<CambridgeWordInfo> words, IWordInfoFormatter formatter)
+        public async Task<(bool Success, List<string> ErrorWords)> AddCards(string deckName, List<CambridgeWordInfo> words, IWordInfoFormatter formatter)
         {
             try
             {
@@ -233,7 +233,7 @@ namespace AnkiLookup.Core.Providers
                 var content = await response.Content.ReadAsStringAsync();
                 dynamic deserialized = JsonConvert.DeserializeObject(content);
                 if (deserialized.error != null)
-                    return new Tuple<bool, List<string>>(false, null);
+                    return (Success: false, ErrorWords: null);
 
                 var errorWords = new List<string>();
                 var index = 0;
@@ -243,11 +243,11 @@ namespace AnkiLookup.Core.Providers
                         errorWords.Add(words[index].InputWord);
                     index++;
                 }
-                return new Tuple<bool, List<string>>(true, errorWords);
+                return (Success: true, ErrorWords: errorWords);
             }
             catch (Exception)
             {
-                return new Tuple<bool, List<string>>(false, null);
+                return (Success: false, ErrorWords: null);
             }
         }
 

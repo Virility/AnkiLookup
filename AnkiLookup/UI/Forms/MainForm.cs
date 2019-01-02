@@ -312,7 +312,7 @@ namespace AnkiLookup.UI.Forms
                     RemoveItemByWordInfo(wordViewItem.WordInfo, true);
                     return;
                 }
-                else if (dialog.ShowDialog() != DialogResult.OK)
+                else if (dialogResult != DialogResult.OK)
                     return;
 
                 dialog.WordInfo.ImportedIntoAnki = default(DateTime);
