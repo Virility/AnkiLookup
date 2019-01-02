@@ -22,6 +22,7 @@ namespace AnkiLookup.UI.Forms
         private readonly AnkiProvider _ankiProvider;
         private readonly CambridgeProvider _cambridgeProvider;
         private readonly IWordInfoFormatter _htmlFormatter;
+        private readonly IWordInfoFormatter _simpleTextFormatter;
         private readonly IWordInfoFormatter _textFormatter;
         private readonly Comparer<string> _comparer;
         private readonly string _wordsDataPath;
@@ -35,6 +36,7 @@ namespace AnkiLookup.UI.Forms
             _cambridgeProvider = new CambridgeProvider(CambridgeDataSet.British);
 
             _htmlFormatter = new HtmlFormatter();
+            _simpleTextFormatter = new SimpleTextFormatter();
             _textFormatter = new TextFormatter();
             _comparer = new OrdinalIgnoreCaseComparer();
 
@@ -211,7 +213,7 @@ namespace AnkiLookup.UI.Forms
                 foreach (WordViewItem wordViewItem in lvWords.Items)
                 {
                     if (wordViewItem.WordInfo.Entries.Count != 0)
-                        entries.Add(wordViewItem.WordInfo.FormatForAnkiImport(_htmlFormatter));
+                        entries.Add(wordViewItem.WordInfo.AsFormatted(_htmlFormatter));
                 }
                 var sortedEntries = entries.ToArray();
                 Array.Sort(sortedEntries, new OrdinalIgnoreCaseComparer());

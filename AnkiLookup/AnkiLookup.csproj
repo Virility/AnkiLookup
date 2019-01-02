@@ -67,6 +67,7 @@
     <Compile Include="Core\Extensions\ForEachAsyncExtensions.cs" />
     <Compile Include="Core\Helpers\HtmlMinifier.cs" />
     <Compile Include="Core\Helpers\Serializer.cs" />
+    <Compile Include="Core\Helpers\SimpleTextFormatter.cs" />
     <Compile Include="Core\Models\CambridgeDataSet.cs" />
     <Compile Include="Core\Models\CambridgeWordInfo.cs" />
     <Compile Include="Core\Models\IniFile.cs" />

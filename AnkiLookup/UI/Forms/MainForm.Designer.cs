@@ -51,6 +51,8 @@ namespace AnkiLookup.UI.Forms
             this.chImported = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.chData = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.rtbWordOutput = new System.Windows.Forms.RichTextBox();
+            this.rbText = new System.Windows.Forms.RadioButton();
+            this.rbHtml = new System.Windows.Forms.RadioButton();
             this.cmsMain.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
@@ -180,7 +182,7 @@ namespace AnkiLookup.UI.Forms
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 75F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(570, 449);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(570, 420);
             this.tableLayoutPanel1.TabIndex = 5;
             // 
             // lvWords
@@ -194,7 +196,7 @@ namespace AnkiLookup.UI.Forms
             this.lvWords.FullRowSelect = true;
             this.lvWords.Location = new System.Drawing.Point(3, 3);
             this.lvWords.Name = "lvWords";
-            this.lvWords.Size = new System.Drawing.Size(564, 330);
+            this.lvWords.Size = new System.Drawing.Size(564, 309);
             this.lvWords.TabIndex = 6;
             this.lvWords.UseCompatibleStateImageBehavior = false;
             this.lvWords.View = System.Windows.Forms.View.Details;
@@ -220,18 +222,44 @@ namespace AnkiLookup.UI.Forms
             // rtbWordOutput
             // 
             this.rtbWordOutput.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rtbWordOutput.Location = new System.Drawing.Point(3, 339);
+            this.rtbWordOutput.Location = new System.Drawing.Point(3, 318);
             this.rtbWordOutput.Name = "rtbWordOutput";
             this.rtbWordOutput.ReadOnly = true;
-            this.rtbWordOutput.Size = new System.Drawing.Size(564, 107);
+            this.rtbWordOutput.Size = new System.Drawing.Size(564, 99);
             this.rtbWordOutput.TabIndex = 4;
             this.rtbWordOutput.Text = "";
+            // 
+            // rbText
+            // 
+            this.rbText.Appearance = System.Windows.Forms.Appearance.Button;
+            this.rbText.AutoSize = true;
+            this.rbText.Checked = true;
+            this.rbText.Location = new System.Drawing.Point(488, 438);
+            this.rbText.Name = "rbText";
+            this.rbText.Size = new System.Drawing.Size(41, 23);
+            this.rbText.TabIndex = 6;
+            this.rbText.TabStop = true;
+            this.rbText.Text = "Text";
+            this.rbText.UseVisualStyleBackColor = true;
+            // 
+            // rbHtml
+            // 
+            this.rbHtml.Appearance = System.Windows.Forms.Appearance.Button;
+            this.rbHtml.AutoSize = true;
+            this.rbHtml.Location = new System.Drawing.Point(535, 438);
+            this.rbHtml.Name = "rbHtml";
+            this.rbHtml.Size = new System.Drawing.Size(47, 23);
+            this.rbHtml.TabIndex = 7;
+            this.rbHtml.Text = "HTML";
+            this.rbHtml.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(594, 473);
+            this.Controls.Add(this.rbHtml);
+            this.Controls.Add(this.rbText);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -241,6 +269,7 @@ namespace AnkiLookup.UI.Forms
             this.cmsMain.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -265,5 +294,7 @@ namespace AnkiLookup.UI.Forms
         private System.Windows.Forms.ColumnHeader chImported;
         private System.Windows.Forms.ToolStripMenuItem tsmiImportToAnki;
         private System.Windows.Forms.ToolStripMenuItem tsmiClearImportStates;
+        private System.Windows.Forms.RadioButton rbText;
+        private System.Windows.Forms.RadioButton rbHtml;
     }
 }

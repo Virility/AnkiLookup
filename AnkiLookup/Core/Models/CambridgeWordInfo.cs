@@ -139,23 +139,18 @@ namespace AnkiLookup.Core.Models
             return wordInfos;
         }
 
-        public string FormatForAnkiImport(IWordInfoFormatter htmlFormatter)
+        public string AsFormatted(IWordInfoFormatter formatter)
         {
             var entryBuilder = new StringBuilder();
             entryBuilder.Append(Entries[0].ActualWord);
             entryBuilder.Append("\t");
 
-            if (htmlFormatter is HtmlFormatter)
-                entryBuilder.AppendLine(HttpUtility.JavaScriptStringEncode(htmlFormatter.Render(this)));
+            if (formatter is HtmlFormatter)
+                entryBuilder.AppendLine(HttpUtility.JavaScriptStringEncode(formatter.Render(this)));
             else
-                entryBuilder.AppendLine(htmlFormatter.Render(this));
+                entryBuilder.AppendLine(formatter.Render(this));
 
             return entryBuilder.ToString();
-        }
-
-        public string AsFormat(IWordInfoFormatter htmlFormatter)
-        {
-            return HttpUtility.JavaScriptStringEncode(htmlFormatter.Render(this));
         }
     }
 }

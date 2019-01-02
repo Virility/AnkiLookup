@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Dynamic;
 using System.IO;
 using System.Net.Http;
@@ -127,7 +128,7 @@ namespace AnkiLookup.Core.Providers
         public Task<bool> AddCard(string deckName, CambridgeWordInfo wordInfo, IWordInfoFormatter formatter, bool checkIfExisting = false)
         {
             var front = wordInfo.InputWord;
-            var back = wordInfo.AsFormat(formatter);
+            var back = wordInfo.AsFormatted(formatter);
             return AddCard(deckName, front, back, checkIfExisting);
         }
 
@@ -215,7 +216,7 @@ namespace AnkiLookup.Core.Providers
             {
                 var notes = new List<dynamic>();
                 foreach (var word in words)
-                    notes.Add(CreateNote(deckName, word.InputWord, word.AsFormat(formatter)));
+                    notes.Add(CreateNote(deckName, word.InputWord, word.AsFormatted(formatter)));
 
                 var postData = new
                 {
@@ -245,8 +246,9 @@ namespace AnkiLookup.Core.Providers
                 }
                 return (Success: true, ErrorWords: errorWords);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Debug.WriteLine($"AddCards: {ex.Message}");
                 return (Success: false, ErrorWords: null);
             }
         }
