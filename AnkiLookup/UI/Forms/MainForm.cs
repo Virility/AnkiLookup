@@ -41,20 +41,29 @@ namespace AnkiLookup.UI.Forms
             _comparer = new OrdinalIgnoreCaseComparer();
 
             InitializeComponent();
+            InitializeAnkiStates();
+            LoadDataFile(_wordsDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Words.dat"));
+        }
 
-            textBox1.Text = _ankiProvider.DeckName;
-            textBox2.Text = _ankiProvider.DeckName;
+        private void InitializeAnkiStates()
+        {
+            tbDeckName.Text = _ankiProvider.DeckName;
 
             if (_ankiProvider.ExportOption == "Text")
                 rbText.Checked = true;
             else
                 rbHtml.Checked = true;
-
-            LoadDataFile(_wordsDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Words.dat"));
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(tbDeckName.Text))
+            {
+                MessageBox.Show("Deck name cannot be empty.");
+                return;
+            }
+            Config.ConfigurationFile.IniWriteValue(Config.Section, Config.DeckNameKey, tbDeckName.Text);
+
             var exportOption = rbText.Checked ? "Text" : "HTML";
             Config.ConfigurationFile.IniWriteValue(Config.Section, Config.ExportOptionKey, exportOption);
 
@@ -373,10 +382,10 @@ namespace AnkiLookup.UI.Forms
             RefreshWordColumn();
             rtbWordOutput.Text = string.Empty;
         }
-
-        private void rbHtml_CheckedChanged(object sender, EventArgs e)
+        
+        private void tbDeckName_TextChanged(object sender, EventArgs e)
         {
-
+            _ankiProvider.DeckName = tbDeckName.Text;
         }
     }
 }
