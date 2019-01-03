@@ -180,8 +180,8 @@ namespace AnkiLookup.UI.Forms
         {
             word = wordViewItem.Text.Trim().ToLower();
             CambridgeWordInfo wordInfo = null;
-            //try
-            //{
+            try
+            {
                 wordInfo = await _cambridgeProvider.GetWordInfo(word);
                 if (wordInfo == null)
                 {
@@ -192,11 +192,11 @@ namespace AnkiLookup.UI.Forms
                 Invoke(new Action(() => wordViewItem.WordInfo = wordInfo));
                 _changeMade = true;
                 await Task.Delay(1000);
-            //}
-            //catch (Exception exception)
-            //{
-            //    Debug.WriteLine($"Internal Error:: Word ({word}): {exception.Message}");
-            //}
+            }
+            catch (Exception exception)
+            {
+                Debug.WriteLine($"Internal Error:: Word ({word}): {exception.Message}");
+            }
         }
 
         private async void tsmiGetDefinitionsFromCambridge_Click(object sender, EventArgs e)
