@@ -41,11 +41,23 @@ namespace AnkiLookup.UI.Forms
             _comparer = new OrdinalIgnoreCaseComparer();
 
             InitializeComponent();
+
+            textBox1.Text = _ankiProvider.DeckName;
+            textBox2.Text = _ankiProvider.DeckName;
+
+            if (_ankiProvider.ExportOption == "Text")
+                rbText.Checked = true;
+            else
+                rbHtml.Checked = true;
+
             LoadDataFile(_wordsDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Words.dat"));
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            var exportOption = rbText.Checked ? "Text" : "HTML";
+            Config.ConfigurationFile.IniWriteValue(Config.Section, Config.ExportOptionKey, exportOption);
+
             if (!_changeMade)
                 return;
 
@@ -168,8 +180,8 @@ namespace AnkiLookup.UI.Forms
         {
             word = wordViewItem.Text.Trim().ToLower();
             CambridgeWordInfo wordInfo = null;
-            try
-            {
+            //try
+            //{
                 wordInfo = await _cambridgeProvider.GetWordInfo(word);
                 if (wordInfo == null)
                 {
@@ -180,11 +192,11 @@ namespace AnkiLookup.UI.Forms
                 Invoke(new Action(() => wordViewItem.WordInfo = wordInfo));
                 _changeMade = true;
                 await Task.Delay(1000);
-            }
-            catch (Exception exception)
-            {
-                Debug.WriteLine($"Internal Error:: Word ({word}): {exception.Message}");
-            }
+            //}
+            //catch (Exception exception)
+            //{
+            //    Debug.WriteLine($"Internal Error:: Word ({word}): {exception.Message}");
+            //}
         }
 
         private async void tsmiGetDefinitionsFromCambridge_Click(object sender, EventArgs e)
@@ -360,6 +372,11 @@ namespace AnkiLookup.UI.Forms
 
             RefreshWordColumn();
             rtbWordOutput.Text = string.Empty;
+        }
+
+        private void rbHtml_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

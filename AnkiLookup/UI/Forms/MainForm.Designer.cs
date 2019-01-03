@@ -46,13 +46,17 @@ namespace AnkiLookup.UI.Forms
             this.tsmiAddWord = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiEditWord = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.rtbWordOutput = new System.Windows.Forms.RichTextBox();
+            this.rbText = new System.Windows.Forms.RadioButton();
+            this.rbHtml = new System.Windows.Forms.RadioButton();
+            this.label1 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.lvWords = new AnkiLookup.UI.Forms.Controls.WordListView();
             this.chWord = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.chImported = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.chData = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.rtbWordOutput = new System.Windows.Forms.RichTextBox();
-            this.rbText = new System.Windows.Forms.RadioButton();
-            this.rbHtml = new System.Windows.Forms.RadioButton();
             this.cmsMain.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
@@ -185,6 +189,73 @@ namespace AnkiLookup.UI.Forms
             this.tableLayoutPanel1.Size = new System.Drawing.Size(570, 420);
             this.tableLayoutPanel1.TabIndex = 5;
             // 
+            // rtbWordOutput
+            // 
+            this.rtbWordOutput.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rtbWordOutput.Location = new System.Drawing.Point(3, 318);
+            this.rtbWordOutput.Name = "rtbWordOutput";
+            this.rtbWordOutput.ReadOnly = true;
+            this.rtbWordOutput.Size = new System.Drawing.Size(564, 99);
+            this.rtbWordOutput.TabIndex = 4;
+            this.rtbWordOutput.Text = "";
+            // 
+            // rbText
+            // 
+            this.rbText.Appearance = System.Windows.Forms.Appearance.Button;
+            this.rbText.Checked = true;
+            this.rbText.Location = new System.Drawing.Point(438, 435);
+            this.rbText.Name = "rbText";
+            this.rbText.Size = new System.Drawing.Size(66, 48);
+            this.rbText.TabIndex = 6;
+            this.rbText.TabStop = true;
+            this.rbText.Text = "Text";
+            this.rbText.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.rbText.UseVisualStyleBackColor = true;
+            // 
+            // rbHtml
+            // 
+            this.rbHtml.Appearance = System.Windows.Forms.Appearance.Button;
+            this.rbHtml.Location = new System.Drawing.Point(510, 435);
+            this.rbHtml.Name = "rbHtml";
+            this.rbHtml.Size = new System.Drawing.Size(72, 39);
+            this.rbHtml.TabIndex = 7;
+            this.rbHtml.Text = "HTML";
+            this.rbHtml.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.rbHtml.UseVisualStyleBackColor = true;
+            this.rbHtml.CheckedChanged += new System.EventHandler(this.rbHtml_CheckedChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(12, 438);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(73, 13);
+            this.label1.TabIndex = 8;
+            this.label1.Text = "Deck Name";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(91, 435);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(341, 21);
+            this.textBox1.TabIndex = 9;
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(91, 462);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(341, 21);
+            this.textBox2.TabIndex = 11;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(12, 465);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(26, 13);
+            this.label2.TabIndex = 10;
+            this.label2.Text = "File";
+            // 
             // lvWords
             // 
             this.lvWords.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -219,45 +290,15 @@ namespace AnkiLookup.UI.Forms
             this.chData.Text = "Data";
             this.chData.Width = 420;
             // 
-            // rtbWordOutput
-            // 
-            this.rtbWordOutput.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rtbWordOutput.Location = new System.Drawing.Point(3, 318);
-            this.rtbWordOutput.Name = "rtbWordOutput";
-            this.rtbWordOutput.ReadOnly = true;
-            this.rtbWordOutput.Size = new System.Drawing.Size(564, 99);
-            this.rtbWordOutput.TabIndex = 4;
-            this.rtbWordOutput.Text = "";
-            // 
-            // rbText
-            // 
-            this.rbText.Appearance = System.Windows.Forms.Appearance.Button;
-            this.rbText.AutoSize = true;
-            this.rbText.Checked = true;
-            this.rbText.Location = new System.Drawing.Point(488, 438);
-            this.rbText.Name = "rbText";
-            this.rbText.Size = new System.Drawing.Size(41, 23);
-            this.rbText.TabIndex = 6;
-            this.rbText.TabStop = true;
-            this.rbText.Text = "Text";
-            this.rbText.UseVisualStyleBackColor = true;
-            // 
-            // rbHtml
-            // 
-            this.rbHtml.Appearance = System.Windows.Forms.Appearance.Button;
-            this.rbHtml.AutoSize = true;
-            this.rbHtml.Location = new System.Drawing.Point(535, 438);
-            this.rbHtml.Name = "rbHtml";
-            this.rbHtml.Size = new System.Drawing.Size(47, 23);
-            this.rbHtml.TabIndex = 7;
-            this.rbHtml.Text = "HTML";
-            this.rbHtml.UseVisualStyleBackColor = true;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(594, 473);
+            this.ClientSize = new System.Drawing.Size(594, 489);
+            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.rbHtml);
             this.Controls.Add(this.rbText);
             this.Controls.Add(this.tableLayoutPanel1);
@@ -296,5 +337,9 @@ namespace AnkiLookup.UI.Forms
         private System.Windows.Forms.ToolStripMenuItem tsmiClearImportStates;
         private System.Windows.Forms.RadioButton rbText;
         private System.Windows.Forms.RadioButton rbHtml;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Label label2;
     }
 }

@@ -16,6 +16,8 @@ namespace AnkiLookup.Core.Providers
     public class AnkiProvider : IDisposable
     {
         private const string DefaultHost = "http://localhost:8765";
+        private const string DefaultExportOption = "Text";
+
 #if DEBUG
         private const string DefaultDeckName = "Vocabulary-TEST";
 #else
@@ -26,6 +28,7 @@ namespace AnkiLookup.Core.Providers
         
         private Uri Host;
         public string DeckName;
+        public string ExportOption;
 
         public AnkiProvider()
         {
@@ -37,21 +40,23 @@ namespace AnkiLookup.Core.Providers
 
         private void FindOrCreateConfig()
         {
-            IniFile configurationFile;
             if (!File.Exists(Config.ConfigurationFilePath))
             {
-                configurationFile = new IniFile(Config.ConfigurationFilePath);
-                configurationFile.IniWriteValue(Config.Section, Config.HostKey, DefaultHost);
-                configurationFile.IniWriteValue(Config.Section, Config.DeckNameKey, DefaultDeckName);
+                Config.ConfigurationFile = new IniFile(Config.ConfigurationFilePath);
+                Config.ConfigurationFile.IniWriteValue(Config.Section, Config.HostKey, DefaultHost);
+                Config.ConfigurationFile.IniWriteValue(Config.Section, Config.DeckNameKey, DefaultDeckName);
+                Config.ConfigurationFile.IniWriteValue(Config.Section, Config.ExportOptionKey, DefaultExportOption);
             }
-            configurationFile = new IniFile(Config.ConfigurationFilePath);
-            Host = new Uri(configurationFile.IniReadValue(Config.Section, Config.HostKey));
+            Config.ConfigurationFile = new IniFile(Config.ConfigurationFilePath);
+            Host = new Uri(Config.ConfigurationFile.IniReadValue(Config.Section, Config.HostKey));
 
 #if DEBUG
+
             DeckName = "Vocabulary-TEST";
 #else
-        DeckName = configurationFile.IniReadValue(Config.Section, Config.DeckNameKey);
+            DeckName = configurationFile.IniReadValue(Config.Section, Config.DeckNameKey);
 #endif
+            ExportOption = Config.ConfigurationFile.IniReadValue(Config.Section, Config.ExportOptionKey);
         }
 
     public async Task<bool> CreateDeck(string deckName = null)

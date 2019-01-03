@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using AnkiSpanishDictWordOfTheDay.Core.Models;
+using System.IO;
 using System.Reflection;
 
 namespace AnkiLookup
@@ -9,8 +10,12 @@ namespace AnkiLookup
         public const string HostKey = "Host";
         public const string LastUpdatedKey = "LastUpdated";
         public const string DeckNameKey = "DeckName";
+        public const string ExportOptionKey = "ExportOption";
+
+        public static IniFile ConfigurationFile;
 
         private static string _applicationPath;
+
         public static string ApplicationPath
         {
             get

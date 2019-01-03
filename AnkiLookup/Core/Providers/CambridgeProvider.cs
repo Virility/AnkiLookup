@@ -44,7 +44,11 @@ namespace AnkiLookup.Core.Providers
             var wordInfo = new CambridgeWordInfo();
             wordInfo.InputWord = word;
             foreach (var entryElement in dataSetElement.QuerySelectorAll(".entry-body > div"))
-                wordInfo.Entries.Add(ParseEntryFromEntryElement(entryElement));
+            {
+                var parsedEntry = ParseEntryFromEntryElement(entryElement);
+                if (parsedEntry != null)
+                    wordInfo.Entries.Add(ParseEntryFromEntryElement(entryElement));
+            }
             return wordInfo;
         }
 
@@ -62,7 +66,14 @@ namespace AnkiLookup.Core.Providers
         private static CambridgeWordInfo.Entry ParseEntryFromEntryElement(IParentNode entryElement)
         {
             var entry = new CambridgeWordInfo.Entry();
-            entry.ActualWord = entryElement.QuerySelector(".headword > span.hw").TextContent;
+
+            var headWordElement = entryElement.QuerySelector(".headword > span.hw");
+            if (headWordElement == null)
+                headWordElement = entryElement.QuerySelector(".headword > span.phrase");
+            if (headWordElement != null)
+                entry.ActualWord = headWordElement.TextContent;
+            else
+                return null;
 
             var labelElement = entryElement.QuerySelector(".posgram > span.pos");
             if (labelElement != null)
