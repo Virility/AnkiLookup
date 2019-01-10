@@ -40,23 +40,21 @@ namespace AnkiLookup.Core.Providers
 
         private void FindOrCreateConfig()
         {
-            if (!File.Exists(Config.ConfigurationFilePath))
+            if (File.Exists(Config.ConfigurationFilePath))
             {
                 Config.ConfigurationFile = new IniFile(Config.ConfigurationFilePath);
-                Config.ConfigurationFile.IniWriteValue(Config.Section, Config.HostKey, DefaultHost);
-                Config.ConfigurationFile.IniWriteValue(Config.Section, Config.DeckNameKey, DefaultDeckName);
-                Config.ConfigurationFile.IniWriteValue(Config.Section, Config.ExportOptionKey, DefaultExportOption);
+                Host = new Uri(Config.ConfigurationFile.IniReadValue(Config.Section, Config.HostKey));
+                DeckName = Config.ConfigurationFile.IniReadValue(Config.Section, Config.DeckNameKey);
+                ExportOption = Config.ConfigurationFile.IniReadValue(Config.Section, Config.ExportOptionKey);
             }
-            Config.ConfigurationFile = new IniFile(Config.ConfigurationFilePath);
-            Host = new Uri(Config.ConfigurationFile.IniReadValue(Config.Section, Config.HostKey));
-
-#if DEBUG
-
-            DeckName = "Vocabulary-TEST";
-#else
-            DeckName = configurationFile.IniReadValue(Config.Section, Config.DeckNameKey);
-#endif
-            ExportOption = Config.ConfigurationFile.IniReadValue(Config.Section, Config.ExportOptionKey);
+            else
+            {
+                var configurationFile = new IniFile(Config.ConfigurationFilePath);
+                configurationFile.IniWriteValue(Config.Section, Config.HostKey, DefaultHost);
+                configurationFile.IniWriteValue(Config.Section, Config.DeckNameKey, DefaultDeckName);
+                configurationFile.IniWriteValue(Config.Section, Config.ExportOptionKey, DefaultExportOption);
+                Config.ConfigurationFile = configurationFile;
+            }
         }
 
     public async Task<bool> CreateDeck(string deckName = null)
@@ -130,20 +128,20 @@ namespace AnkiLookup.Core.Providers
             return note;
         }
 
-        public Task<bool> AddCard(string deckName, CambridgeWordInfo wordInfo, IWordInfoFormatter formatter, bool checkIfExisting = false)
+        public Task<bool> AddNote(string deckName, CambridgeWordInfo wordInfo, IWordInfoFormatter formatter, bool checkIfExisting = false)
         {
             var front = wordInfo.InputWord;
             var back = wordInfo.AsFormatted(formatter);
-            return AddCard(deckName, front, back, checkIfExisting);
+            return AddNote(deckName, front, back, checkIfExisting);
         }
 
-        public async Task<bool> AddCard(string deckName, string front, string back, bool checkIfExisting = false)
+        public async Task<bool> AddNote(string deckName, string front, string back, bool checkIfExisting = false)
         {
             try
             {
                 if (checkIfExisting)
                 {
-                    var existingIds = await FindCards($"deck:\"{deckName}\" front:\"{front}\"");
+                    var existingIds = await FindNotes($"deck:\"{deckName}\" front:\"{front}\"");
                     if (existingIds != null && existingIds.Count != 0)
                         return await UpdateNoteFields(existingIds[0], front, back);
                 }
@@ -190,7 +188,7 @@ namespace AnkiLookup.Core.Providers
             return content.Contains("\"error\": null");
         }
 
-        private async Task<List<long>> FindCards(string query)
+        private async Task<List<long>> FindNotes(string query)
         {
             var postData = new
             {
@@ -215,7 +213,7 @@ namespace AnkiLookup.Core.Providers
             return ids;
         }
 
-        public async Task<(bool Success, List<string> ErrorWords)> AddCards(string deckName, List<CambridgeWordInfo> words, IWordInfoFormatter formatter)
+        public async Task<(bool Success, List<string> ErrorWords)> AddNotes(string deckName, List<CambridgeWordInfo> words, IWordInfoFormatter formatter)
         {
             try
             {
@@ -253,7 +251,7 @@ namespace AnkiLookup.Core.Providers
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"AddCards: {ex.Message}");
+                Debug.WriteLine($"AddNotes: {ex.Message}");
                 return (Success: false, ErrorWords: null);
             }
         }

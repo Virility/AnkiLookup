@@ -27,6 +27,7 @@ namespace AnkiLookup.UI.Forms
         private readonly Comparer<string> _comparer;
         private readonly string _wordsDataPath;
         private readonly int _maxConcurrentLookups = 10;
+        private readonly string _previousDeckName;
 
         private bool _changeMade;
 
@@ -194,8 +195,8 @@ namespace AnkiLookup.UI.Forms
                 wordInfo = await _cambridgeProvider.GetWordInfo(word);
                 if (wordInfo == null)
                 {
-                    Invoke(new Action(() => wordViewItem.SubItems[2].Text = "Can't find word."));
-                    Debug.WriteLine($"Error:: Word ({word}): Can't find word.");
+                    Invoke(new Action(() => wordViewItem.SubItems[2].Text = "Cannot find word."));
+                    Debug.WriteLine($"Error:: Word ({word}): Cannot find word.");
                     return;
                 }
                 Invoke(new Action(() => wordViewItem.WordInfo = wordInfo));
@@ -381,11 +382,6 @@ namespace AnkiLookup.UI.Forms
 
             RefreshWordColumn();
             rtbWordOutput.Text = string.Empty;
-        }
-        
-        private void tbDeckName_TextChanged(object sender, EventArgs e)
-        {
-            _ankiProvider.DeckName = tbDeckName.Text;
         }
     }
 }

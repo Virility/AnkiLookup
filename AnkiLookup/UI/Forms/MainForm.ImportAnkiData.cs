@@ -103,11 +103,11 @@ namespace AnkiLookup.UI.Forms
             var formatter = rbText.Checked ? _simpleTextFormatter : _htmlFormatter;
 
             if (wordInfos.Count == 1)
-                result = await _ankiProvider.AddCard(_ankiProvider.DeckName, wordInfos[0], formatter, checkIfExisting);
+                result = await _ankiProvider.AddNote(_ankiProvider.DeckName, wordInfos[0], formatter, checkIfExisting);
             else if (wordInfos.Count > 1)
             {
                 var words = wordInfos.OrderBy(a => a.InputWord, _comparer).ToList();
-                var (Success, ErrorWords) = await _ankiProvider.AddCards(_ankiProvider.DeckName, words, formatter);
+                var (Success, ErrorWords) = await _ankiProvider.AddNotes(_ankiProvider.DeckName, words, formatter);
                 if (Success)
                 {
                     result = true;
@@ -122,7 +122,7 @@ namespace AnkiLookup.UI.Forms
 
             foreach (var wordInfo in addedBeforeWordInfos)
             {
-                if (await _ankiProvider.AddCard(_ankiProvider.DeckName, wordInfo, formatter, checkIfExisting))
+                if (await _ankiProvider.AddNote(_ankiProvider.DeckName, wordInfo, formatter, checkIfExisting))
                     result = true;
                 else
                     errorWords.Add(wordInfo.InputWord);

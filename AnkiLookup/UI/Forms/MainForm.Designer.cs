@@ -270,7 +270,6 @@ namespace AnkiLookup.UI.Forms
             this.tbDeckName.Name = "tbDeckName";
             this.tbDeckName.Size = new System.Drawing.Size(341, 21);
             this.tbDeckName.TabIndex = 9;
-            this.tbDeckName.TextChanged += new System.EventHandler(this.tbDeckName_TextChanged);
             // 
             // MainForm
             // 
