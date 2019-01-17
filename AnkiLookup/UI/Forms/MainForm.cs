@@ -91,7 +91,6 @@ namespace AnkiLookup.UI.Forms
             Config.ConfigurationFile.IniWriteValue(Config.Section, Config.LastOpenedDeckNameKey, _ankiProvider.LastOpenedDeckName);
         }
 
-
         private void HandleDeckManagement(DeckViewItem deckViewItem)
         {
             using (var deckManagementDialog = new DeckManagementForm(deckViewItem.Deck))
@@ -127,6 +126,7 @@ namespace AnkiLookup.UI.Forms
                     return;
 
                 var deck = new Deck();
+                deck.Name = Path.GetFileNameWithoutExtension(dialog.FileName);
                 deck.FilePath = dialog.FileName;
                 var deckViewItem = new DeckViewItem(deck);
                 lvDecks.Items.Add(deckViewItem);
@@ -143,6 +143,12 @@ namespace AnkiLookup.UI.Forms
 
             var deckViewItem = lvDecks.SelectedItems[0] as DeckViewItem;
             HandleDeckManagement(deckViewItem);
+        }
+
+        private void tsmiDeleteSelected_Click(object sender, EventArgs e)
+        {
+            if (lvDecks.SelectedItems.Count != 0)
+                lvDecks.Items.Remove(lvDecks.SelectedItems[0]);
         }
 
         private void lvDecks_DoubleClick(object sender, EventArgs e)

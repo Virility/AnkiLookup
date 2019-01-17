@@ -40,6 +40,7 @@
             this.chDeckName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.chCreated = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.chModified = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.tsmiDeleteSelected = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsMain.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -47,9 +48,10 @@
             // 
             this.cmsMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsmiAddDeck,
-            this.tsmiManageSelected});
+            this.tsmiManageSelected,
+            this.tsmiDeleteSelected});
             this.cmsMain.Name = "cmsMain";
-            this.cmsMain.Size = new System.Drawing.Size(165, 48);
+            this.cmsMain.Size = new System.Drawing.Size(181, 92);
             // 
             // tsmiAddDeck
             // 
@@ -57,7 +59,7 @@
             this.tsmiAddDeckNew,
             this.tsmiAddDeckFromFile});
             this.tsmiAddDeck.Name = "tsmiAddDeck";
-            this.tsmiAddDeck.Size = new System.Drawing.Size(164, 22);
+            this.tsmiAddDeck.Size = new System.Drawing.Size(180, 22);
             this.tsmiAddDeck.Text = "Add Deck";
             // 
             // tsmiAddDeckNew
@@ -77,7 +79,7 @@
             // tsmiManageSelected
             // 
             this.tsmiManageSelected.Name = "tsmiManageSelected";
-            this.tsmiManageSelected.Size = new System.Drawing.Size(164, 22);
+            this.tsmiManageSelected.Size = new System.Drawing.Size(180, 22);
             this.tsmiManageSelected.Text = "Manage Selected";
             this.tsmiManageSelected.Click += new System.EventHandler(this.tsmiManageSelected_Click);
             // 
@@ -115,6 +117,13 @@
             this.chModified.Text = "Modified";
             this.chModified.Width = 122;
             // 
+            // tsmiDeleteSelected
+            // 
+            this.tsmiDeleteSelected.Name = "tsmiDeleteSelected";
+            this.tsmiDeleteSelected.Size = new System.Drawing.Size(180, 22);
+            this.tsmiDeleteSelected.Text = "Delete Selected";
+            this.tsmiDeleteSelected.Click += new System.EventHandler(this.tsmiDeleteSelected_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
@@ -142,5 +151,6 @@
         private System.Windows.Forms.ToolStripMenuItem tsmiAddDeckNew;
         private System.Windows.Forms.ToolStripMenuItem tsmiAddDeckFromFile;
         private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ToolStripMenuItem tsmiDeleteSelected;
     }
 }
