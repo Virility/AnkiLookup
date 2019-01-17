@@ -13,19 +13,19 @@ namespace AnkiLookup.UI.Forms
 {
     public partial class MainForm : Form
     {
-        private readonly string _decksInformationFile = Path.Combine(Config.ApplicationPath, "Decks.json");
         private readonly AnkiProvider _ankiProvider;
         private readonly CambridgeProvider _cambridgeProvider;
         private readonly IWordInfoFormatter _htmlFormatter;
         private readonly IWordInfoFormatter _simpleTextFormatter;
         private readonly IWordInfoFormatter _textFormatter;
         private readonly Comparer<string> _comparer;
-       
+
+        private string _lastOpenedDeckName;
         private bool _changeMade;
 
         public MainForm()
         {
-            _ankiProvider = new AnkiProvider();
+            _ankiProvider = new AnkiProvider(FindOrCreateConfig());
             _cambridgeProvider = new CambridgeProvider(CambridgeDataSet.British);
             _htmlFormatter = new HtmlFormatter();
             _simpleTextFormatter = new SimpleTextFormatter();
@@ -35,6 +35,30 @@ namespace AnkiLookup.UI.Forms
             InitializeComponent();
             LoadDecks();
         }
+    
+        private Uri FindOrCreateConfig()
+        {
+            Uri host;
+
+            Config.ConfigurationFile = new IniFile(Config.ConfigurationFilePath);
+
+            if (File.Exists(Config.ConfigurationFilePath))
+            {
+                host = new Uri(Config.ConfigurationFile.IniReadValue(Config.Section, Config.HostKey));
+                _lastOpenedDeckName = Config.ConfigurationFile.IniReadValue(Config.Section, Config.LastOpenedDeckNameKey);
+            }
+            else
+            {
+                host = new Uri(Config.DefaultHost);
+                Config.ConfigurationFile.IniWriteValue(Config.Section, Config.HostKey, Config.DefaultHost);
+
+                _lastOpenedDeckName = string.Empty;
+                Config.ConfigurationFile.IniWriteValue(Config.Section, Config.LastOpenedDeckNameKey, _lastOpenedDeckName);
+
+            }
+            return host;
+        }
+
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -45,13 +69,15 @@ namespace AnkiLookup.UI.Forms
         private void LoadDecks()
         {
             var deckViewItemsList = new List<DeckViewItem>();
-            if (!File.Exists(_decksInformationFile))
+            if (!File.Exists(Config.DeckInformationFilePath))
             {
                 foreach (var dataFilePath in Directory.GetFiles(Config.ApplicationPath, "*.dat"))
                 {
-                    var deck = new Deck();
-                    deck.Name = Path.GetFileNameWithoutExtension(dataFilePath);
-                    deck.FilePath = dataFilePath;
+                    var deck = new Deck
+                    {
+                        Name = Path.GetFileNameWithoutExtension(dataFilePath),
+                        FilePath = dataFilePath
+                    };
                     deckViewItemsList.Add(new DeckViewItem(deck));
                     _changeMade = true;
                 }
@@ -59,20 +85,18 @@ namespace AnkiLookup.UI.Forms
                 return;
             }
 
-            var content = File.ReadAllText(_decksInformationFile);
-            var decks = JsonConvert.DeserializeObject<Deck[]>(content);
-
-            foreach (var deck in decks)
+            var content = File.ReadAllText(Config.DeckInformationFilePath);
+            foreach (var deck in JsonConvert.DeserializeObject<Deck[]>(content))
                 deckViewItemsList.Add(new DeckViewItem(deck));
             lvDecks.Items.AddRange(deckViewItemsList.ToArray());
 
-            if (string.IsNullOrWhiteSpace(_ankiProvider.LastOpenedDeckName))
+            if (string.IsNullOrWhiteSpace(_lastOpenedDeckName))
                 return;
 
             DeckViewItem lastOpenedDeckViewItem = null;
             foreach (DeckViewItem deckViewItem in lvDecks.Items)
             {
-                if (deckViewItem.Deck.Name == _ankiProvider.LastOpenedDeckName)
+                if (deckViewItem.Deck.Name == _lastOpenedDeckName)
                 {
                     lastOpenedDeckViewItem = deckViewItem;
                     break;
@@ -86,9 +110,9 @@ namespace AnkiLookup.UI.Forms
         {
             var decks = lvDecks.Items.Cast<DeckViewItem>()
                 .Select(deckViewItem => deckViewItem.Deck).ToArray();
-            File.WriteAllText(_decksInformationFile, JsonConvert.SerializeObject(decks));
+            File.WriteAllText(Config.DeckInformationFilePath, JsonConvert.SerializeObject(decks));
 
-            Config.ConfigurationFile.IniWriteValue(Config.Section, Config.LastOpenedDeckNameKey, _ankiProvider.LastOpenedDeckName);
+            Config.ConfigurationFile.IniWriteValue(Config.Section, Config.LastOpenedDeckNameKey, _lastOpenedDeckName);
         }
 
         private void HandleDeckManagement(DeckViewItem deckViewItem)
@@ -104,7 +128,7 @@ namespace AnkiLookup.UI.Forms
                     return;
 
                 _changeMade = true;
-                _ankiProvider.LastOpenedDeckName = deckManagementDialog.Deck.Name;
+                _lastOpenedDeckName = deckManagementDialog.Deck.Name;
                 deckViewItem.Deck = deckManagementDialog.Deck;
             }
         }
@@ -125,9 +149,11 @@ namespace AnkiLookup.UI.Forms
                 if (dialog.ShowDialog() != DialogResult.OK)
                     return;
 
-                var deck = new Deck();
-                deck.Name = Path.GetFileNameWithoutExtension(dialog.FileName);
-                deck.FilePath = dialog.FileName;
+                var deck = new Deck
+                {
+                    Name = Path.GetFileNameWithoutExtension(dialog.FileName),
+                    FilePath = dialog.FileName
+                };
                 var deckViewItem = new DeckViewItem(deck);
                 lvDecks.Items.Add(deckViewItem);
 

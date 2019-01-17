@@ -15,6 +15,8 @@
         {
             if (disposing && (components != null))
             {
+                _ankiProvider.Dispose();
+                _cambridgeProvider.Dispose();
                 components.Dispose();
             }
             base.Dispose(disposing);

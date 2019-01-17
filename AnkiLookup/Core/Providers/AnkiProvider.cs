@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
-using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -14,41 +13,15 @@ namespace AnkiLookup.Core.Providers
 {
     public class AnkiProvider : IDisposable
     {
-        private const string DefaultHost = "http://localhost:8765";
         private readonly HttpClient _client;
-        
-        private Uri Host;
 
-        public string LastOpenedDeckName { get; internal set; }
-
-        public AnkiProvider()
+        public AnkiProvider(Uri host)
         {
-            FindOrCreateConfig();
-
             _client = new HttpClient();
-            _client.BaseAddress = Host;
+            _client.BaseAddress = host;
         }
 
-        private void FindOrCreateConfig()
-        {
-            if (File.Exists(Config.ConfigurationFilePath))
-            {
-                Config.ConfigurationFile = new IniFile(Config.ConfigurationFilePath);
-                Host = new Uri(Config.ConfigurationFile.IniReadValue(Config.Section, Config.HostKey));
-                LastOpenedDeckName = Config.ConfigurationFile.IniReadValue(Config.Section, Config.LastOpenedDeckNameKey);
-            }
-            else
-            {
-                var configurationFile = new IniFile(Config.ConfigurationFilePath);
-                Host = new Uri(DefaultHost);
-                configurationFile.IniWriteValue(Config.Section, Config.HostKey, DefaultHost);
-                LastOpenedDeckName = string.Empty;
-                configurationFile.IniWriteValue(Config.Section, Config.LastOpenedDeckNameKey, LastOpenedDeckName);
-                Config.ConfigurationFile = configurationFile;
-            }
-        }
-
-    public async Task<bool> CreateDeck(string deckName = null)
+        public async Task<bool> CreateDeck(string deckName = null)
         {
             try
             {
@@ -62,8 +35,8 @@ namespace AnkiLookup.Core.Providers
                     }
                 });
 
-                var response = await _client.PostAsync(Host, new StringContent(data));
-                var content = await response.Content.ReadAsStringAsync();
+                var response = await _client.PostAsync(_client.BaseAddress, new StringContent(data)).ConfigureAwait(false);
+                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 return content.Contains("\"error\": null");
             }
             catch (Exception)
@@ -87,8 +60,8 @@ namespace AnkiLookup.Core.Providers
                     }
                 });
 
-                var response = await _client.PostAsync(Host, new StringContent(data));
-                var content = await response.Content.ReadAsStringAsync();
+                var response = await _client.PostAsync(_client.BaseAddress, new StringContent(data)).ConfigureAwait(false);
+                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 return content.Contains("\"error\": null");
             }
             catch (Exception)
@@ -132,9 +105,9 @@ namespace AnkiLookup.Core.Providers
             {
                 if (checkIfExisting)
                 {
-                    var existingIds = await FindNotes($"deck:\"{deckName}\" front:\"{front}\"");
+                    var existingIds = await FindNotes($"deck:\"{deckName}\" front:\"{front}\"").ConfigureAwait(false);
                     if (existingIds != null && existingIds.Count != 0)
-                        return await UpdateNoteFields(existingIds[0], front, back);
+                        return await UpdateNoteFields(existingIds[0], front, back).ConfigureAwait(false);
                 }
 
                 dynamic note = CreateNote(deckName, front, back);
@@ -150,8 +123,8 @@ namespace AnkiLookup.Core.Providers
 
                 var data = JsonConvert.SerializeObject(postData);
 
-                var response = await _client.PostAsync(Host, new StringContent(data));
-                var content = await response.Content.ReadAsStringAsync();
+                var response = await _client.PostAsync(_client.BaseAddress, new StringContent(data)).ConfigureAwait(false);
+                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 return content.Contains("\"error\": null");
             }
             catch (Exception)
@@ -174,8 +147,8 @@ namespace AnkiLookup.Core.Providers
             };
             var data = JsonConvert.SerializeObject(postData);
 
-            var response = await _client.PostAsync(Host, new StringContent(data));
-            var content = await response.Content.ReadAsStringAsync();
+            var response = await _client.PostAsync(_client.BaseAddress, new StringContent(data)).ConfigureAwait(false);
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             return content.Contains("\"error\": null");
         }
 
@@ -192,8 +165,8 @@ namespace AnkiLookup.Core.Providers
             };
             var data = JsonConvert.SerializeObject(postData);
 
-            var response = await _client.PostAsync(Host, new StringContent(data));
-            var content = await response.Content.ReadAsStringAsync();
+            var response = await _client.PostAsync(_client.BaseAddress, new StringContent(data)).ConfigureAwait(false);
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             dynamic deserialized = JsonConvert.DeserializeObject(content);
             if (deserialized.error != null)
                 return null;
@@ -224,8 +197,8 @@ namespace AnkiLookup.Core.Providers
 
                 var data = JsonConvert.SerializeObject(postData);
 
-                var response = await _client.PostAsync(Host, new StringContent(data));
-                var content = await response.Content.ReadAsStringAsync();
+                var response = await _client.PostAsync(_client.BaseAddress, new StringContent(data)).ConfigureAwait(false);
+                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 dynamic deserialized = JsonConvert.DeserializeObject(content);
                 if (deserialized.error != null)
                     return (Success: false, ErrorWords: null);

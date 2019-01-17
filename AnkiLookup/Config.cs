@@ -24,6 +24,10 @@ namespace AnkiLookup
             }
         }
 
-        public static string ConfigurationFilePath => Path.Combine(ApplicationPath, "Anki.cfg");
+        public static string DefaultHost = "";
+
+        public static string ConfigurationFilePath = Path.Combine(ApplicationPath, "Anki.cfg");
+
+        public static string DeckInformationFilePath = Path.Combine(ApplicationPath, "Decks.json");
     }
 }

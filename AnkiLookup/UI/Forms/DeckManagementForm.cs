@@ -18,6 +18,7 @@ namespace AnkiLookup.UI.Forms
     public partial class DeckManagementForm : Form
     {
         public CambridgeWordInfo CopiedWordInfo { get; set; }
+
         public Deck Deck { get; set; }
 
         private AnkiProvider _ankiProvider;
@@ -26,7 +27,7 @@ namespace AnkiLookup.UI.Forms
         private IWordInfoFormatter _simpleTextFormatter;
         private IWordInfoFormatter _textFormatter;
         private Comparer<string> _comparer;
-        
+
         private readonly int _maxConcurrentLookups = 10;
         private bool _changeMade;
 
@@ -75,20 +76,22 @@ namespace AnkiLookup.UI.Forms
             if (previousDeckName != Deck.Name)
                 _changeMade = true;
 
+            var previousDeckExportOption = Deck.ExportOption;
+            Deck.ExportOption = rbText.Checked ? "Text" : "HTML";
+            if (previousDeckExportOption != Deck.ExportOption)
+                _changeMade = true;
+
             if (!_changeMade)
             {
                 DialogResult = DialogResult.Cancel;
                 return;
             }
 
-            Deck.ExportOption = rbText.Checked ? "Text" : "HTML";
             Deck.DateModified = DateTime.Now;
-
             var wordInfos = lvWords.Items.Cast<WordViewItem>()
                 .Select(wordViewItem => wordViewItem.WordInfo)
                 .Where(wordInfo => wordInfo != null)
                 .OrderBy(a => a.InputWord, _comparer).ToArray();
-
             if (previousDeckName == Path.GetFileNameWithoutExtension(Deck.FilePath))
             {
                 File.Delete(Deck.FilePath);
@@ -350,7 +353,6 @@ namespace AnkiLookup.UI.Forms
 
             var wordViewItem = lvWords.SelectedItems[0] as WordViewItem;
             var wordInfo = wordViewItem.WordInfo;
-
             var wordInfos = lvWords.GetAsWordInfoList();
 
             using (var dialog = new EditWordInfoForm(this, Job.Edit, _cambridgeProvider, wordInfo, ref wordInfos))
