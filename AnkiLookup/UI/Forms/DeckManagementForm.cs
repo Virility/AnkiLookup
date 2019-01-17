@@ -28,14 +28,11 @@ namespace AnkiLookup.UI.Forms
         private Comparer<string> _comparer;
         
         private readonly int _maxConcurrentLookups = 10;
-
-        private string _previousDeckName;
         private bool _changeMade;
 
         public DeckManagementForm(Deck deck)
         {
             Deck = deck;
-            _previousDeckName = deck.Name;
 
             InitializeComponent();
             InitializeAnkiStates();
@@ -72,26 +69,39 @@ namespace AnkiLookup.UI.Forms
                 MessageBox.Show("Deck name cannot be empty.");
                 return;
             }
+
+            var previousDeckName = Deck.Name;
             Deck.Name = tbDeckName.Text;
-            if (_previousDeckName != tbDeckName.Text)
+            if (previousDeckName != Deck.Name)
                 _changeMade = true;
 
-            if (_changeMade)
+            if (!_changeMade)
             {
-                Deck.ExportOption = rbText.Checked ? "Text" : "HTML";
-                Deck.DateModified = DateTime.Now;
+                DialogResult = DialogResult.Cancel;
+                return;
+            }
 
-                var wordInfos = lvWords.Items.Cast<WordViewItem>()
-                    .Select(wordViewItem => wordViewItem.WordInfo)
-                    .Where(wordInfo => wordInfo != null)
-                    .OrderBy(a => a.InputWord, _comparer).ToArray();
+            Deck.ExportOption = rbText.Checked ? "Text" : "HTML";
+            Deck.DateModified = DateTime.Now;
+
+            var wordInfos = lvWords.Items.Cast<WordViewItem>()
+                .Select(wordViewItem => wordViewItem.WordInfo)
+                .Where(wordInfo => wordInfo != null)
+                .OrderBy(a => a.InputWord, _comparer).ToArray();
+
+            if (previousDeckName == Path.GetFileNameWithoutExtension(Deck.FilePath))
+            {
+                File.Delete(Deck.FilePath);
+                Deck.FilePath = Deck.GetFilePathFromBaseDirectory(Deck.Name);
                 File.WriteAllBytes(Deck.FilePath, CambridgeWordInfo.Serialize(wordInfos));
-                DialogResult = DialogResult.OK;
             }
             else
             {
-                DialogResult = DialogResult.Cancel;
+                File.WriteAllBytes(Deck.FilePath, CambridgeWordInfo.Serialize(wordInfos));
             }
+
+            File.WriteAllBytes(Deck.FilePath, CambridgeWordInfo.Serialize(wordInfos));
+            DialogResult = DialogResult.OK;
         }
 
         private async void lvWords_DoubleClick(object sender, EventArgs e)
@@ -197,7 +207,7 @@ namespace AnkiLookup.UI.Forms
 
                 lvWords.Items.Clear();
                 LoadDataFile(dialog.FileName);
-                _changeMade = false;
+                _changeMade = true;
             }
         }
 

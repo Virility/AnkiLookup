@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.cmsMain = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tsmiAddDeck = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiAddDeckNew = new System.Windows.Forms.ToolStripMenuItem();
@@ -121,6 +122,7 @@
             this.ClientSize = new System.Drawing.Size(545, 345);
             this.Controls.Add(this.lvDecks);
             this.Font = new System.Drawing.Font("Verdana", 8.25F);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "MainForm";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);

@@ -25,9 +25,12 @@ namespace AnkiLookup.Core.Models
         public string ExportOption { get; set; } = DefaultExportOption;
 
 
-        public static string GetFilePathFromBaseDirectory()
+        public static string GetFilePathFromBaseDirectory(string deckName = null)
         {
-            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, DefaultDeckName + ".dat");
+            if (deckName == null)
+                return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, DefaultDeckName + ".dat");
+            else
+                return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, deckName + ".dat");
         }
     }
 }
