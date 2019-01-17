@@ -24,7 +24,7 @@ namespace AnkiLookup
             }
         }
 
-        public static string DefaultHost = "";
+        public static string DefaultHost = "http://localhost:8765";
 
         public static string ConfigurationFilePath = Path.Combine(ApplicationPath, "Anki.cfg");
 
