@@ -44,13 +44,24 @@ namespace AnkiLookup.UI.Forms
 
         private void LoadDecks()
         {
+            var deckViewItemsList = new List<DeckViewItem>();
             if (!File.Exists(_decksInformationFile))
+            {
+                foreach (var dataFilePath in Directory.GetFiles(Config.ApplicationPath, "*.dat"))
+                {
+                    var deck = new Deck();
+                    deck.Name = Path.GetFileNameWithoutExtension(dataFilePath);
+                    deck.FilePath = dataFilePath;
+                    deckViewItemsList.Add(new DeckViewItem(deck));
+                    _changeMade = true;
+                }
+                lvDecks.Items.AddRange(deckViewItemsList.ToArray());
                 return;
+            }
 
             var content = File.ReadAllText(_decksInformationFile);
             var decks = JsonConvert.DeserializeObject<Deck[]>(content);
 
-            var deckViewItemsList = new List<DeckViewItem>();
             foreach (var deck in decks)
                 deckViewItemsList.Add(new DeckViewItem(deck));
             lvDecks.Items.AddRange(deckViewItemsList.ToArray());
