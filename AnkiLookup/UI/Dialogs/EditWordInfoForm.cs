@@ -18,14 +18,14 @@ namespace AnkiLookup.UI.Models
 
         public bool ChangeMade { get; internal set; }
 
-        private readonly MainForm _sender;
+        private readonly DeckManagementForm _sender;
         private readonly string _titleFormat;
         private readonly CambridgeProvider _cambridgeProvider;
         private readonly List<CambridgeWordInfo> _wordInfos;
         private int _lastIndex = -1;
         private bool _isCanceling;
 
-        public EditWordInfoForm(MainForm sender, Job job, CambridgeProvider cambridgeProvider,
+        public EditWordInfoForm(DeckManagementForm sender, Job job, CambridgeProvider cambridgeProvider,
              CambridgeWordInfo wordInfo, ref List<CambridgeWordInfo> wordInfos)
         {
             _sender = sender;

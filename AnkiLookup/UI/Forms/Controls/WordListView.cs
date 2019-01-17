@@ -10,8 +10,8 @@ namespace AnkiLookup.UI.Forms.Controls
         public List<CambridgeWordInfo> GetAsWordInfoList()
         {
             var wordInfos = new List<CambridgeWordInfo>();
-            foreach (var item in Items)
-                wordInfos.Add((item as WordViewItem)?.WordInfo);
+            foreach (var wordViewItem in Items)
+                wordInfos.Add((wordViewItem as WordViewItem)?.WordInfo);
             return wordInfos;
         }
     }

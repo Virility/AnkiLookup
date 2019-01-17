@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace AnkiSpanishDictWordOfTheDay.Core.Models
+namespace AnkiLookup.Core.Models
 {
     public class IniFile
     {

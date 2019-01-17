@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace AnkiLookup.UI.Forms
 {
-    partial class MainForm
+    partial class DeckManagementForm
     {
         private void SetWordInfoStates(WordViewItem wordViewItem, bool addedBefore, DateTime dateTime)
         {
@@ -74,7 +74,7 @@ namespace AnkiLookup.UI.Forms
             if (dialogResult == DialogResult.Yes)
             {
                 checkIfExisting = false;
-                if (!await _ankiProvider.DeleteDeck(_ankiProvider.DeckName))
+                if (!await _ankiProvider.DeleteDeck(Deck.Name))
                     return;
 
                 wordViewItemsToProcess = lvWords.Items.Cast<WordViewItem>().ToArray();
@@ -86,7 +86,7 @@ namespace AnkiLookup.UI.Forms
                     .Where(item => item.WordInfo.ImportedIntoAnki == default(DateTime)).ToArray();
             }
 
-            if (!await _ankiProvider.CreateDeck(_ankiProvider.DeckName))
+            if (!await _ankiProvider.CreateDeck(Deck.Name))
             {
                 Debug.WriteLine("Could not create deck.");
                 return;
@@ -103,11 +103,11 @@ namespace AnkiLookup.UI.Forms
             var formatter = rbText.Checked ? _simpleTextFormatter : _htmlFormatter;
 
             if (wordInfos.Count == 1)
-                result = await _ankiProvider.AddNote(_ankiProvider.DeckName, wordInfos[0], formatter, checkIfExisting);
+                result = await _ankiProvider.AddNote(Deck.Name, wordInfos[0], formatter, checkIfExisting);
             else if (wordInfos.Count > 1)
             {
                 var words = wordInfos.OrderBy(a => a.InputWord, _comparer).ToList();
-                var (Success, ErrorWords) = await _ankiProvider.AddNotes(_ankiProvider.DeckName, words, formatter);
+                var (Success, ErrorWords) = await _ankiProvider.AddNotes(Deck.Name, words, formatter);
                 if (Success)
                 {
                     result = true;
@@ -122,7 +122,7 @@ namespace AnkiLookup.UI.Forms
 
             foreach (var wordInfo in addedBeforeWordInfos)
             {
-                if (await _ankiProvider.AddNote(_ankiProvider.DeckName, wordInfo, formatter, checkIfExisting))
+                if (await _ankiProvider.AddNote(Deck.Name, wordInfo, formatter, checkIfExisting))
                     result = true;
                 else
                     errorWords.Add(wordInfo.InputWord);

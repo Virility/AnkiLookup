@@ -1,6 +1,5 @@
 ﻿using AnkiLookup.Core.Helpers;
 using AnkiLookup.Core.Models;
-using AnkiSpanishDictWordOfTheDay.Core.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -16,19 +15,11 @@ namespace AnkiLookup.Core.Providers
     public class AnkiProvider : IDisposable
     {
         private const string DefaultHost = "http://localhost:8765";
-        private const string DefaultExportOption = "Text";
-
-#if DEBUG
-        private const string DefaultDeckName = "Vocabulary-TEST";
-#else
-        private const string DefaultDeckName = "Vocabulary";
-#endif
-
         private readonly HttpClient _client;
         
         private Uri Host;
-        public string DeckName;
-        public string ExportOption;
+
+        public string LastOpenedDeckName { get; internal set; }
 
         public AnkiProvider()
         {
@@ -44,15 +35,15 @@ namespace AnkiLookup.Core.Providers
             {
                 Config.ConfigurationFile = new IniFile(Config.ConfigurationFilePath);
                 Host = new Uri(Config.ConfigurationFile.IniReadValue(Config.Section, Config.HostKey));
-                DeckName = Config.ConfigurationFile.IniReadValue(Config.Section, Config.DeckNameKey);
-                ExportOption = Config.ConfigurationFile.IniReadValue(Config.Section, Config.ExportOptionKey);
+                LastOpenedDeckName = Config.ConfigurationFile.IniReadValue(Config.Section, Config.LastOpenedDeckNameKey);
             }
             else
             {
                 var configurationFile = new IniFile(Config.ConfigurationFilePath);
+                Host = new Uri(DefaultHost);
                 configurationFile.IniWriteValue(Config.Section, Config.HostKey, DefaultHost);
-                configurationFile.IniWriteValue(Config.Section, Config.DeckNameKey, DefaultDeckName);
-                configurationFile.IniWriteValue(Config.Section, Config.ExportOptionKey, DefaultExportOption);
+                LastOpenedDeckName = string.Empty;
+                configurationFile.IniWriteValue(Config.Section, Config.LastOpenedDeckNameKey, LastOpenedDeckName);
                 Config.ConfigurationFile = configurationFile;
             }
         }
