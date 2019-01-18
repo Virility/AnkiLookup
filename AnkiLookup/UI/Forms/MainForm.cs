@@ -173,8 +173,11 @@ namespace AnkiLookup.UI.Forms
 
         private void tsmiDeleteSelected_Click(object sender, EventArgs e)
         {
-            if (lvDecks.SelectedItems.Count != 0)
-                lvDecks.Items.Remove(lvDecks.SelectedItems[0]);
+            if (lvDecks.SelectedItems.Count == 0)
+                return;
+
+            lvDecks.Items.Remove(lvDecks.SelectedItems[0]);
+            _changeMade = true;
         }
 
         private void lvDecks_DoubleClick(object sender, EventArgs e)

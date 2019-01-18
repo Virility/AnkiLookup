@@ -12,6 +12,7 @@ using AnkiLookup.UI.Models;
 using AnkiLookup.UI.Controls;
 using System.Linq;
 using AnkiLookup.Core.Extensions;
+using System.Net.Http;
 
 namespace AnkiLookup.UI.Forms
 {
@@ -95,7 +96,7 @@ namespace AnkiLookup.UI.Forms
             if (previousDeckName == Path.GetFileNameWithoutExtension(Deck.FilePath))
             {
                 File.Delete(Deck.FilePath);
-                Deck.FilePath = Deck.GetFilePathFromBaseDirectory(Deck.Name);
+                Deck.FilePath = Deck.GetDeckFilePathFromDeckName(Deck.Name);
                 File.WriteAllBytes(Deck.FilePath, CambridgeWordInfo.Serialize(wordInfos));
             }
             else

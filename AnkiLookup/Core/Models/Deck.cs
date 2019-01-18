@@ -11,7 +11,7 @@ namespace AnkiLookup.Core.Models
         private const string DefaultDeckName = "Vocabulary";
 #endif
 
-        private static string DefaultFilePath = GetFilePathFromBaseDirectory();
+        private static string DefaultFilePath = GetDeckFilePathFromDeckName();
         private const string DefaultExportOption = "Text";
 
         public string Name { get; set; } = DefaultDeckName;
@@ -24,10 +24,10 @@ namespace AnkiLookup.Core.Models
 
         public string ExportOption { get; set; } = DefaultExportOption;
 
-        public static string GetFilePathFromBaseDirectory(string deckName = null)
+        public static string GetDeckFilePathFromDeckName(string deckName = null)
         {
             deckName = string.IsNullOrWhiteSpace(deckName) ? DefaultDeckName : deckName;
-            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, deckName + ".dat");
+            return Path.Combine(Config.ApplicationPath, deckName + ".dat");
         }
     }
 }
