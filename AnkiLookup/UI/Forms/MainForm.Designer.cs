@@ -37,12 +37,12 @@
             this.tsmiAddDeckNew = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiAddDeckFromFile = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiManageSelected = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsmiDeleteSelected = new System.Windows.Forms.ToolStripMenuItem();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.lvDecks = new AnkiLookup.UI.Forms.Controls.WordListView();
             this.chDeckName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.chCreated = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.chModified = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.tsmiDeleteSelected = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsMain.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -53,7 +53,7 @@
             this.tsmiManageSelected,
             this.tsmiDeleteSelected});
             this.cmsMain.Name = "cmsMain";
-            this.cmsMain.Size = new System.Drawing.Size(181, 92);
+            this.cmsMain.Size = new System.Drawing.Size(165, 70);
             // 
             // tsmiAddDeck
             // 
@@ -61,7 +61,7 @@
             this.tsmiAddDeckNew,
             this.tsmiAddDeckFromFile});
             this.tsmiAddDeck.Name = "tsmiAddDeck";
-            this.tsmiAddDeck.Size = new System.Drawing.Size(180, 22);
+            this.tsmiAddDeck.Size = new System.Drawing.Size(164, 22);
             this.tsmiAddDeck.Text = "Add Deck";
             // 
             // tsmiAddDeckNew
@@ -81,9 +81,16 @@
             // tsmiManageSelected
             // 
             this.tsmiManageSelected.Name = "tsmiManageSelected";
-            this.tsmiManageSelected.Size = new System.Drawing.Size(180, 22);
+            this.tsmiManageSelected.Size = new System.Drawing.Size(164, 22);
             this.tsmiManageSelected.Text = "Manage Selected";
             this.tsmiManageSelected.Click += new System.EventHandler(this.tsmiManageSelected_Click);
+            // 
+            // tsmiDeleteSelected
+            // 
+            this.tsmiDeleteSelected.Name = "tsmiDeleteSelected";
+            this.tsmiDeleteSelected.Size = new System.Drawing.Size(164, 22);
+            this.tsmiDeleteSelected.Text = "Delete Selected";
+            this.tsmiDeleteSelected.Click += new System.EventHandler(this.tsmiDeleteSelected_Click);
             // 
             // lvDecks
             // 
@@ -118,13 +125,6 @@
             // 
             this.chModified.Text = "Modified";
             this.chModified.Width = 122;
-            // 
-            // tsmiDeleteSelected
-            // 
-            this.tsmiDeleteSelected.Name = "tsmiDeleteSelected";
-            this.tsmiDeleteSelected.Size = new System.Drawing.Size(180, 22);
-            this.tsmiDeleteSelected.Text = "Delete Selected";
-            this.tsmiDeleteSelected.Click += new System.EventHandler(this.tsmiDeleteSelected_Click);
             // 
             // MainForm
             // 

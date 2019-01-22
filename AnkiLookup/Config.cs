@@ -26,6 +26,8 @@ namespace AnkiLookup
 
         public static string DefaultHost = "http://localhost:8765";
 
+        public static string DefaultHtmlModel = "AnkiLookupHtml";
+
         public static string ConfigurationFilePath = Path.Combine(ApplicationPath, "Anki.cfg");
 
         public static string DeckInformationFilePath = Path.Combine(ApplicationPath, "Decks.json");

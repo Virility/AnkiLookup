@@ -77,26 +77,27 @@ namespace AnkiLookup.UI.Models
                 return;
             }
 
-            if (ChangeMade)
+            if (!ChangeMade)
             {
-                if (Job == Job.Add && _wordInfos.Any(wordInfo => wordInfo.InputWord == WordInfo.InputWord))
-                {
-                    var dialogResult = MessageBox.Show(
-                        "This word already exists in the database.\n" +
-                        "Would you like to add anyway?\n" +
-                        "Duplicates will not sync."
-                        , "AnkiLookup", MessageBoxButtons.YesNoCancel);
-                    if (dialogResult == DialogResult.No || dialogResult == DialogResult.Cancel)
-                    {
-                        DialogResult = DialogResult.Abort;
-                        return;
-                    }
-                }
-
-                DialogResult = DialogResult.OK;
-            }
-            else
                 DialogResult = DialogResult.Abort;
+                return;
+            }
+
+            if (Job == Job.Add && _wordInfos.Any(wordInfo => wordInfo.InputWord == WordInfo.InputWord))
+            {
+                var dialogResult = MessageBox.Show(
+                    "This word already exists in the database.\n" +
+                    "Would you like to add anyway?\n" +
+                    "Duplicates will not sync."
+                    , "AnkiLookup", MessageBoxButtons.YesNoCancel);
+                if (dialogResult == DialogResult.No || dialogResult == DialogResult.Cancel)
+                {
+                    DialogResult = DialogResult.Abort;
+                    return;
+                }
+            }
+
+            DialogResult = DialogResult.OK;
         }
 
         private void tbInputWord_TextChanged(object sender, EventArgs e)

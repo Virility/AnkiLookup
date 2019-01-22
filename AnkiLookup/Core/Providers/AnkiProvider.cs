@@ -70,11 +70,11 @@ namespace AnkiLookup.Core.Providers
             }
         }
 
-        private dynamic CreateNote(string deckName, string front, string back)
+        private dynamic CreateNote(string deckName, string modelName, string front, string back)
         {
             dynamic note = new ExpandoObject();
             note.deckName = deckName;
-            note.modelName = "Basic";
+            note.modelName = modelName;
             note.fields = new ExpandoObject();
             note.fields.Front = front;
             note.fields.Back = back;
@@ -92,14 +92,14 @@ namespace AnkiLookup.Core.Providers
             return note;
         }
 
-        public Task<bool> AddNote(string deckName, CambridgeWordInfo wordInfo, IWordInfoFormatter formatter, bool checkIfExisting = false)
+        public Task<bool> AddNote(string deckName, string modelName, CambridgeWordInfo wordInfo, IWordInfoFormatter formatter, bool checkIfExisting = false)
         {
             var front = wordInfo.InputWord;
             var back = wordInfo.AsFormatted(formatter);
-            return AddNote(deckName, front, back, checkIfExisting);
+            return AddNote(deckName, modelName, front, back, checkIfExisting);
         }
 
-        public async Task<bool> AddNote(string deckName, string front, string back, bool checkIfExisting = false)
+        public async Task<bool> AddNote(string deckName, string modelName, string front, string back, bool checkIfExisting = false)
         {
             try
             {
@@ -110,7 +110,7 @@ namespace AnkiLookup.Core.Providers
                         return await UpdateNoteFields(existingIds[0], front, back).ConfigureAwait(false);
                 }
 
-                dynamic note = CreateNote(deckName, front, back);
+                dynamic note = CreateNote(deckName, modelName, front, back);
                 var postData = new
                 {
                     action = "addNote",
@@ -177,13 +177,13 @@ namespace AnkiLookup.Core.Providers
             return ids;
         }
 
-        public async Task<(bool Success, List<string> ErrorWords)> AddNotes(string deckName, List<CambridgeWordInfo> words, IWordInfoFormatter formatter)
+        public async Task<(bool Success, List<string> ErrorWords)> AddNotes(string deckName, string modelName, List<CambridgeWordInfo> words, IWordInfoFormatter formatter)
         {
             try
             {
                 var notes = new List<dynamic>();
                 foreach (var word in words)
-                    notes.Add(CreateNote(deckName, word.InputWord, word.AsFormatted(formatter)));
+                    notes.Add(CreateNote(deckName, modelName, word.InputWord, word.AsFormatted(formatter)));
 
                 var postData = new
                 {
@@ -218,6 +218,56 @@ namespace AnkiLookup.Core.Providers
                 Debug.WriteLine($"AddNotes: {ex.Message}");
                 return (Success: false, ErrorWords: null);
             }
+        }
+
+
+        public dynamic CreateNoteModel(string name, string front, string style, string back)
+        {
+            dynamic model = new ExpandoObject();
+            model.name = name;
+            model.css = style;
+            model.tmpls = new[]
+            {
+                new {
+                    name = "Card 1",
+                    qfmt = front,
+                    afmt = back
+                }
+            };
+
+            return model;
+        }
+
+        public async Task<bool> AddModel(string name, string front, string style, string back)
+        {
+            dynamic noteModel = new ExpandoObject();
+            noteModel.name = name;
+            noteModel.css = style;
+            noteModel.tmpls = new[]
+            {
+                new {
+                    name = "Card 1",
+                    qfmt = front,
+                    afmt = back
+                }
+            };
+            var postData = new
+            {
+                action = "addModel",
+                version = 6,
+                @params = new
+                {
+                    noteModel
+                }
+            };
+            var data = JsonConvert.SerializeObject(postData);
+            var response = await _client.PostAsync(_client.BaseAddress, new StringContent(data)).ConfigureAwait(false);
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            if (content.Contains("\"error\": null"))
+                return true;
+            if (content.Contains("model already exists"))
+                return true;
+            return false;
         }
 
         public void Dispose()

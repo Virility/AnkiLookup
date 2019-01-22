@@ -96,6 +96,65 @@ namespace AnkiLookup.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {{FrontSide}}
+        ///&lt;hr id=answer&gt;
+        ///{{Back}}.
+        /// </summary>
+        internal static string HtmlBack {
+            get {
+                return ResourceManager.GetString("HtmlBack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .card {
+        ///	font-family: &quot;Segoe UI&quot;;
+        ///	font-style: normal;
+        ///	font-size: 1.8em;
+        ///	font-stretch: normal;
+        ///	background-color: #333333;
+        ///	color: white;
+        ///	text-rendering: optimizeLegibility;
+        ///	padding: 16px;
+        ///	overflow: hidden;
+        ///}
+        ///
+        ///.word {
+        ///	color: #ffffff;
+        ///	font-size: 28px;
+        ///	font-weight: 400;
+        ///	text-align: left;
+        ///	margin-top: 0px;
+        ///}
+        ///.blocks {
+        ///	padding-bottom: 30px;
+        ///}
+        ///.block {
+        ///	white-space: nowrap;
+        ///	padding-bottom: 4px;
+        ///}
+        ///.label {
+        ///	display: inline-block;
+        ///	color: orange;
+        ///	font-size: 16px;
+        ///	font-wei [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string HtmlCss {
+            get {
+                return ResourceManager.GetString("HtmlCss", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;div class=&quot;word&quot;&gt;{{Front}}&lt;/div&gt;.
+        /// </summary>
+        internal static string HtmlFront {
+            get {
+                return ResourceManager.GetString("HtmlFront", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;li class=&quot;scope&quot;&gt;
         ///	&lt;div class=&quot;definition-container&quot;&gt;
         ///		&lt;div class=&quot;definition&quot;&gt;{{Definition}}&lt;/div&gt;

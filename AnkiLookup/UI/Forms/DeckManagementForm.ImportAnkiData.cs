@@ -100,14 +100,21 @@ namespace AnkiLookup.UI.Forms
 
             var result = false;
             var errorWords = new List<string>();
+
+            if (rbHtml.Checked && !await _ankiProvider.AddModel(Config.DefaultHtmlModel, Properties.Resources.HtmlFront, Properties.Resources.HtmlCss, Properties.Resources.HtmlBack))
+            {
+                MessageBox.Show("Card type cannot be created.");
+                return;
+            }
+
             var formatter = rbText.Checked ? _simpleTextFormatter : _htmlFormatter;
 
             if (wordInfos.Count == 1)
-                result = await _ankiProvider.AddNote(Deck.Name, wordInfos[0], formatter, checkIfExisting);
+                result = await _ankiProvider.AddNote(Deck.Name, Config.DefaultHtmlModel, wordInfos[0], formatter, checkIfExisting);
             else if (wordInfos.Count > 1)
             {
                 var words = wordInfos.OrderBy(a => a.InputWord, _comparer).ToList();
-                var (Success, ErrorWords) = await _ankiProvider.AddNotes(Deck.Name, words, formatter);
+                var (Success, ErrorWords) = await _ankiProvider.AddNotes(Deck.Name, Config.DefaultHtmlModel, words, formatter);
                 if (Success)
                 {
                     result = true;
@@ -122,7 +129,7 @@ namespace AnkiLookup.UI.Forms
 
             foreach (var wordInfo in addedBeforeWordInfos)
             {
-                if (await _ankiProvider.AddNote(Deck.Name, wordInfo, formatter, checkIfExisting))
+                if (await _ankiProvider.AddNote(Deck.Name, Config.DefaultHtmlModel, wordInfo, formatter, checkIfExisting))
                     result = true;
                 else
                     errorWords.Add(wordInfo.InputWord);

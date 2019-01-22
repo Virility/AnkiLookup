@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Web;
 using AnkiLookup.Core.Helpers;
@@ -142,13 +143,12 @@ namespace AnkiLookup.Core.Models
         public string AsFormatted(IWordInfoFormatter formatter)
         {
             var entryBuilder = new StringBuilder();
-            entryBuilder.Append(Entries[0].ActualWord);
-            entryBuilder.Append("\t");
-
-            if (formatter is HtmlFormatter)
-                entryBuilder.AppendLine(HttpUtility.JavaScriptStringEncode(formatter.Render(this)));
-            else
-                entryBuilder.AppendLine(formatter.Render(this));
+            if (!(formatter is HtmlFormatter))
+            {
+                entryBuilder.Append(!string.IsNullOrWhiteSpace(InputWord) ? InputWord : Entries[0].ActualWord);
+                entryBuilder.Append("\t");
+            }
+            entryBuilder.AppendLine(formatter.Render(this));
 
             return entryBuilder.ToString();
         }

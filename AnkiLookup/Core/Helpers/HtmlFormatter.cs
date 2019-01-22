@@ -15,27 +15,30 @@ namespace AnkiLookup.Core.Helpers
             var blocksHtml = Resources.BlocksFormat;
 
             var entryBuilder = new StringBuilder();
-            foreach (var entry in wordInfo.Entries)
+
+            for (int index = 0; index < wordInfo.Entries.Count; index++)
             {
-                var actualWordDoesntEqualInput = !string.Equals(entry.ActualWord, wordInfo.InputWord,
+                var actualWordDoesntEqualInput = !string.Equals(wordInfo.Entries[index].ActualWord, wordInfo.InputWord,
                     StringComparison.CurrentCultureIgnoreCase);
                 var currentActualWordIsPreviousActualWord =
-                    previousEntry != null && previousEntry.ActualWord != entry.ActualWord;
+                    previousEntry != null && previousEntry.ActualWord != wordInfo.Entries[index].ActualWord;
 
                 var entryHtml = Resources.EntryFormat;
 
-                if (actualWordDoesntEqualInput || currentActualWordIsPreviousActualWord)
-                    entryHtml = entryHtml.Replace("{{ActualWord}}", $"<div class=\"word\">{entry.ActualWord}</div>");
-                else
+                if (index == 0 && wordInfo.InputWord == wordInfo.Entries[0].ActualWord)
                     entryHtml = entryHtml.Replace("{{ActualWord}}", string.Empty);
+                else if (!actualWordDoesntEqualInput && !currentActualWordIsPreviousActualWord)
+                    entryHtml = entryHtml.Replace("{{ActualWord}}", string.Empty);
+                else
+                    entryHtml = entryHtml.Replace("{{ActualWord}}", $"<div class=\"word\">{wordInfo.Entries[index].ActualWord}</div>");
 
-                if (string.IsNullOrWhiteSpace(entry.Label))
+                if (string.IsNullOrWhiteSpace(wordInfo.Entries[index].Label))
                     entryHtml = entryHtml.Replace("<p class=\"label\">[{{Label}}]</p>", string.Empty);
                 else
-                    entryHtml = entryHtml.Replace("{{Label}}", entry.Label);
+                    entryHtml = entryHtml.Replace("{{Label}}", wordInfo.Entries[index].Label);
 
                 var scopeBuilder = new StringBuilder();
-                foreach (var definition in entry.Definitions)
+                foreach (var definition in wordInfo.Entries[index].Definitions)
                 {
                     var scopeFormat = Resources.ScopeFormat.Replace("{{Definition}}", definition.Definition);
                     if (definition.Examples == null)
@@ -49,10 +52,10 @@ namespace AnkiLookup.Core.Helpers
                                 continue;
 
                             int offset = 0;
-                            if (entry.ActualWord.StartsWith("-"))
+                            if (wordInfo.Entries[index].ActualWord.StartsWith("-"))
                                 offset = 1;
 
-                            var pattern = $"\\b\\w*{entry.ActualWord.Substring(offset, entry.ActualWord.Length - (2 + offset))}\\w*\\b";
+                            var pattern = $"\\b\\w*{wordInfo.Entries[index].ActualWord.Substring(offset, wordInfo.Entries[index].ActualWord.Length - (2 + offset))}\\w*\\b";
                             var replacement = "<span class=\"highlighted\">$&</span>";
                             var formattedExample = Regex.Replace(example, pattern, replacement, RegexOptions.IgnoreCase);
                             examplesBuilder.AppendLine(Resources.ExampleFormat.Replace("{{Example}}", formattedExample));
@@ -64,9 +67,9 @@ namespace AnkiLookup.Core.Helpers
                 entryHtml = entryHtml.Replace("{{Scope}}", scopeBuilder.ToString());
                 entryBuilder.AppendLine(entryHtml);
 
-                previousEntry = entry;
+                previousEntry = wordInfo.Entries[index];
             }
-            
+
             return HtmlMinifier.Minify(blocksHtml.Replace("{{Blocks}}", entryBuilder.ToString()));
         }
     }

@@ -12,7 +12,6 @@ using AnkiLookup.UI.Models;
 using AnkiLookup.UI.Controls;
 using System.Linq;
 using AnkiLookup.Core.Extensions;
-using System.Net.Http;
 
 namespace AnkiLookup.UI.Forms
 {

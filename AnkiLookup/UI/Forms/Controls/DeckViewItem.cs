@@ -1,6 +1,5 @@
 ﻿using AnkiLookup.Core.Models;
 using System;
-using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace AnkiLookup.UI.Controls
@@ -8,6 +7,7 @@ namespace AnkiLookup.UI.Controls
     public class DeckViewItem : ListViewItem
     {
         private Deck _deck;
+
         public Deck Deck {
             get { return _deck; }
             set {
@@ -43,7 +43,6 @@ namespace AnkiLookup.UI.Controls
         public DeckViewItem(Deck deck = null)
         {
             Deck = (deck == null) ? new Deck() : deck;
-            Debug.WriteLine(_deck.Name);
         }
     }
 }

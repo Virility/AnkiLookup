@@ -11,7 +11,7 @@ namespace AnkiLookup.Core.Models
         private const string DefaultDeckName = "Vocabulary";
 #endif
 
-        private static string DefaultFilePath = GetDeckFilePathFromDeckName();
+        private readonly static string DefaultFilePath = GetDeckFilePathFromDeckName();
         private const string DefaultExportOption = "Text";
 
         public string Name { get; set; } = DefaultDeckName;
