@@ -140,67 +140,89 @@
 {{Back}}</value>
   </data>
   <data name="HtmlCss" xml:space="preserve">
-    <value>.card {
-	font-family: "Segoe UI";
-	font-style: normal;
-	font-size: 1.8em;
-	font-stretch: normal;
-	background-color: #333333;
+    <value>body {
+	transition: all .5s ease-in-out;
+}
+
+@font-face {
+	font-family: SegoeUI;
+	src: url('_SegoeUI.ttf');
+}
+
+.card {
 	color: white;
+	font-family: SegoeUI;
+	font-size: 20px;
+	text-align: left;
 	text-rendering: optimizeLegibility;
-	padding: 16px;
+	padding: 16px 2px;
 	overflow: hidden;
+	background-color: #232323;
+	display: flex;
+	justify-content: center;
 }
 
 .word {
 	color: #ffffff;
-	font-size: 28px;
+	font-size: 1.8rem;
 	font-weight: 400;
 	text-align: left;
 	margin-top: 0px;
 }
-.blocks {
-	padding-bottom: 30px;
-}
+
 .block {
 	white-space: nowrap;
 	padding-bottom: 4px;
+	display: flex;
+	flex-direction: column;
 }
+
 .label {
 	display: inline-block;
 	color: orange;
-	font-size: 16px;
+	font-size: 0.8em;
 	font-weight: 700;
 	margin: 0;
 	vertical-align: top;
-	float: left;
-	width: auto;
+	text-align: center;
+	padding-bottom: 10px;
 }
+
 .scope-container {
 	margin-top: 0px;
-	margin-left: 30px;
 	list-style-type: none;
+	padding-left: 5px;
+	padding-right: 5px;
 }
 .scope {
-	margin-left: 16px;
-	margin-right: 16px;
 	white-space: normal;
+}
+.scope:not(:last-child) {
+	margin-bottom: 10px;
+}
+
+.examples {
+	background-color: #333;
+	padding: 5px;
+	border-radius: 9px;
+	margin-top: 10px;
 }
 
 .example-group {
-	display: block:
-	overflow: hidden;
+	display: block;
 	white-space: nowrap;
 	padding-top: 5px;
 	padding-bottom: 5px;
-	margin-right: 60px;
-	font-size: .7em;
+	margin-right: 30px;
+	font-size: 0.8em;
 }
-.example-group &gt; div {
+
+.example-group&gt;div {
 	padding-right: 5px;
 	display: inline-block;
 	vertical-align: top;
 }
+
 .example {
 	color: #B5E642;
 	display: inline-block;
@@ -208,8 +230,41 @@
 	margin-bottom: 0px;
 	white-space: normal;
 }
+
 .highlighted {
 	color: #009dff;
+}
+
+#answer {
+	border-color: #009dff;
+}
+
+@media (min-width: 1025px) {
+	.card {
+		font-size: 20px;
+		padding: 16px;
+	}
+	.word {
+		font-size: 2.0em;
+	}
+	.block {
+		display: table-row;
+		flex-direction: row;
+	}
+	.label {
+		font-size: 1rem;
+		text-align: left;
+		padding-bottom: 0px;
+		display: table-cell;
+	}
+	.scope-container {
+		padding-left: 20px;
+		padding-right: 20px;
+	}
+	.example-group {
+		margin-right: 60px;
+		font-size: 1em;
+	}
 }</value>
   </data>
   <data name="HtmlFront" xml:space="preserve">

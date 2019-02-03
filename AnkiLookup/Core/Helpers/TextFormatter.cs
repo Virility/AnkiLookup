@@ -7,6 +7,9 @@ namespace AnkiLookup.Core.Helpers
     {
         public string Render(CambridgeWordInfo wordInfo)
         {
+            if (wordInfo.Entries.Count == 0)
+                return string.Empty;
+
             var sb = new StringBuilder();
 
             for (var i = 0; i < wordInfo.Entries.Count; i++)
@@ -34,6 +37,8 @@ namespace AnkiLookup.Core.Helpers
 
                 sb.AppendLine();
             }
+            if (sb.Length == 0)
+                return string.Empty;
 
             var sbText = sb.ToString();
             return sbText.Substring(0, sbText.Length - 1);

@@ -56,8 +56,12 @@ namespace AnkiLookup.UI.Models
             lvDefinitions.Items.AddRange(definitionViewItems.ToArray());
         }
 
+        private string _inputWord;
+
         private void EditWordInfoForm_Load(object sender, EventArgs e)
         {
+            _inputWord = WordInfo.InputWord;
+
             tbInputWord.Text = WordInfo.InputWord;
             tbInputWord_TextChanged(null, null);
             if (WordInfo == null)
@@ -76,6 +80,9 @@ namespace AnkiLookup.UI.Models
                 DialogResult = DialogResult.Cancel;
                 return;
             }
+
+            if (tbInputWord.Text != _inputWord)
+                ChangeMade = true;
 
             if (!ChangeMade)
             {
@@ -96,14 +103,14 @@ namespace AnkiLookup.UI.Models
                     return;
                 }
             }
-
+            
             DialogResult = DialogResult.OK;
         }
 
         private void tbInputWord_TextChanged(object sender, EventArgs e)
         {
             WordInfo.InputWord = tbInputWord.Text.Trim().ToLower();
-            Text = string.Format(_titleFormat, Job, tbInputWord.Text);
+            Text = string.Format(_titleFormat, Job, WordInfo.InputWord);
         }
 
         private void tbInputWord_KeyDown(object sender, KeyEventArgs e)
@@ -160,7 +167,11 @@ namespace AnkiLookup.UI.Models
         private void lvEntries_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (lvDefinitions.SelectedItems.Count == 0)
+            {
+                lvExamples.Items.Clear();
+                rtbOutput.Clear();
                 return;
+            }
 
             var definitionViewItem = lvDefinitions.SelectedItems[0] as DefinitionViewItem;
             if (_lastIndex == (int)definitionViewItem.Tag)
@@ -274,6 +285,7 @@ namespace AnkiLookup.UI.Models
                     return;
                 }
 
+                WordInfo.Entries[definitionViewItem.EntryIndex].ActualWord = dialog.Word;
                 WordInfo.Entries[definitionViewItem.EntryIndex].Label = dialog.Label;
                 WordInfo.Entries[definitionViewItem.EntryIndex].Definitions[definitionViewItem.DefinitionIndex].Definition = dialog.Definition;
 
@@ -318,7 +330,7 @@ namespace AnkiLookup.UI.Models
 
                 var definitionViewItem = lvDefinitions.SelectedItems[0] as DefinitionViewItem;
 
-                var examples = dialog.Example.Split(',')
+                var examples = dialog.Example.Split(Environment.NewLine.ToCharArray())
                     .Select(x => x.Trim())
                     .Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
                 for (int index = 0; index < examples.Length; index++)
@@ -371,6 +383,8 @@ namespace AnkiLookup.UI.Models
         {
             var exampleViewItem = lvExamples.SelectedItems[0] as ExampleViewItem;
             var exampleIndex = exampleViewItem.ExampleIndex;
+            var definitionIndex = lvDefinitions.SelectedIndices[0];
+
             var definitionEntry = WordInfo.Entries      [exampleViewItem.EntryIndex]
                                           .Definitions  [exampleViewItem.DefinitionIndex];
 
@@ -384,7 +398,7 @@ namespace AnkiLookup.UI.Models
                 lvExamples.Items[index].Text = (index + 1).ToString();
             }
 
-            lvDefinitions.Items[exampleViewItem.DefinitionIndex].SubItems[2].Text = definitionEntry.Examples.Count.ToString();
+            lvDefinitions.Items[definitionIndex].SubItems[2].Text = definitionEntry.Examples.Count.ToString();
 
             rtbOutput.Text = string.Empty;
             ChangeMade = true;

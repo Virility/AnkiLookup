@@ -107,37 +107,39 @@ namespace AnkiLookup.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .card {
-        ///	font-family: &quot;Segoe UI&quot;;
-        ///	font-style: normal;
-        ///	font-size: 1.8em;
-        ///	font-stretch: normal;
-        ///	background-color: #333333;
+        ///   Looks up a localized string similar to body {
+        ///	transition: all .5s ease-in-out;
+        ///}
+        ///
+        ///@font-face {
+        ///	font-family: SegoeUI;
+        ///	src: url(&apos;_SegoeUI.ttf&apos;);
+        ///}
+        ///
+        ///.card {
         ///	color: white;
+        ///	font-family: SegoeUI;
+        ///	font-size: 20px;
+        ///	text-align: left;
         ///	text-rendering: optimizeLegibility;
-        ///	padding: 16px;
+        ///	padding: 16px 2px;
         ///	overflow: hidden;
+        ///	background-color: #232323;
+        ///	display: flex;
+        ///	justify-content: center;
         ///}
         ///
         ///.word {
         ///	color: #ffffff;
-        ///	font-size: 28px;
+        ///	font-size: 1.8rem;
         ///	font-weight: 400;
         ///	text-align: left;
         ///	margin-top: 0px;
         ///}
-        ///.blocks {
-        ///	padding-bottom: 30px;
-        ///}
+        ///
         ///.block {
         ///	white-space: nowrap;
-        ///	padding-bottom: 4px;
-        ///}
-        ///.label {
-        ///	display: inline-block;
-        ///	color: orange;
-        ///	font-size: 16px;
-        ///	font-wei [rest of string was truncated]&quot;;.
+        ///	pa [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string HtmlCss {
             get {
