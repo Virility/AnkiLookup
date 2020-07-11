@@ -4,41 +4,41 @@ using System.Text.RegularExpressions;
 using AnkiLookup.Core.Models;
 using AnkiLookup.Properties;
 
-namespace AnkiLookup.Core.Helpers
+namespace AnkiLookup.Core.Helpers.Formatters
 {
-    public class HtmlFormatter : IWordInfoFormatter
+    public class HtmlFormatter : IWordFormatter
     {
-        public string Render(CambridgeWordInfo wordInfo)
+        public string Render(Word word)
         {
-            CambridgeWordInfo.Entry previousEntry = null;
+            Word.Entry previousEntry = null;
 
             var blocksHtml = Resources.BlocksFormat;
 
             var entryBuilder = new StringBuilder();
 
-            for (int index = 0; index < wordInfo.Entries.Count; index++)
+            for (int index = 0; index < word.Entries.Count; index++)
             {
-                var actualWordDoesntEqualInput = !string.Equals(wordInfo.Entries[index].ActualWord, wordInfo.InputWord,
+                var actualWordDoesntEqualInput = !string.Equals(word.Entries[index].ActualWord, word.InputWord,
                     StringComparison.CurrentCultureIgnoreCase);
                 var currentActualWordIsPreviousActualWord =
-                    previousEntry != null && previousEntry.ActualWord != wordInfo.Entries[index].ActualWord;
+                    previousEntry != null && previousEntry.ActualWord != word.Entries[index].ActualWord;
 
                 var entryHtml = Resources.EntryFormat;
 
-                if (index == 0 && wordInfo.InputWord == wordInfo.Entries[0].ActualWord)
+                if (index == 0 && word.InputWord == word.Entries[0].ActualWord)
                     entryHtml = entryHtml.Replace("{{ActualWord}}", string.Empty);
                 else if (!actualWordDoesntEqualInput && !currentActualWordIsPreviousActualWord)
                     entryHtml = entryHtml.Replace("{{ActualWord}}", string.Empty);
                 else
-                    entryHtml = entryHtml.Replace("{{ActualWord}}", $"<div class=\"word\">{wordInfo.Entries[index].ActualWord}</div>");
+                    entryHtml = entryHtml.Replace("{{ActualWord}}", $"<div class=\"word\">{word.Entries[index].ActualWord}</div>");
 
-                if (string.IsNullOrWhiteSpace(wordInfo.Entries[index].Label))
+                if (string.IsNullOrWhiteSpace(word.Entries[index].Label))
                     entryHtml = entryHtml.Replace("<p class=\"label\">[{{Label}}]</p>", string.Empty);
                 else
-                    entryHtml = entryHtml.Replace("{{Label}}", wordInfo.Entries[index].Label);
+                    entryHtml = entryHtml.Replace("{{Label}}", word.Entries[index].Label);
 
                 var scopeBuilder = new StringBuilder();
-                foreach (var definition in wordInfo.Entries[index].Definitions)
+                foreach (var definition in word.Entries[index].Definitions)
                 {
                     var scopeFormat = Resources.ScopeFormat.Replace("{{Definition}}", definition.Definition);
                     if (definition.Examples == null)
@@ -52,10 +52,10 @@ namespace AnkiLookup.Core.Helpers
                                 continue;
 
                             int offset = 0;
-                            if (wordInfo.Entries[index].ActualWord.StartsWith("-"))
+                            if (word.Entries[index].ActualWord.StartsWith("-"))
                                 offset = 1;
 
-                            var pattern = $"\\b\\w*{wordInfo.Entries[index].ActualWord.Substring(offset, wordInfo.Entries[index].ActualWord.Length - (2 + offset))}\\w*\\b";
+                            var pattern = $"\\b\\w*{word.Entries[index].ActualWord.Substring(offset, word.Entries[index].ActualWord.Length - (2 + offset))}\\w*\\b";
                             var replacement = "<span class=\"highlighted\">$&</span>";
                             var formattedExample = Regex.Replace(example, pattern, replacement, RegexOptions.IgnoreCase);
                             examplesBuilder.AppendLine(Resources.ExampleFormat.Replace("{{Example}}", formattedExample));
@@ -67,7 +67,7 @@ namespace AnkiLookup.Core.Helpers
                 entryHtml = entryHtml.Replace("{{Scope}}", scopeBuilder.ToString());
                 entryBuilder.AppendLine(entryHtml);
 
-                previousEntry = wordInfo.Entries[index];
+                previousEntry = word.Entries[index];
             }
 
             return HtmlMinifier.Minify(blocksHtml.Replace("{{Blocks}}", entryBuilder.ToString()));

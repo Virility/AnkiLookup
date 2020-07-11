@@ -1,414 +1,322 @@
-﻿ using System;
-using System.Collections.Generic;
-using System.Text;
-using AnkiLookup.Core.Providers;
-using System.Windows.Forms;
-using AnkiLookup.Core.Helpers;
-using System.IO;
-using System.Threading.Tasks;
-using AnkiLookup.Core.Models;
-using System.Diagnostics;
-using AnkiLookup.UI.Models;
+﻿using AnkiLookup.Core.Models;
 using AnkiLookup.UI.Controls;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using AnkiLookup.Core.Extensions;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace AnkiLookup.UI.Forms
 {
     public partial class DeckManagementForm : Form
     {
-        public CambridgeWordInfo CopiedWordInfo { get; set; }
+        private static bool _changeMade;
+        private static string _lastOpenedDeckName;
 
-        public Deck Deck { get; set; }
-
-        private AnkiProvider _ankiProvider;
-        private CambridgeProvider _cambridgeProvider;
-        private IWordInfoFormatter _htmlFormatter;
-        private IWordInfoFormatter _simpleTextFormatter;
-        private IWordInfoFormatter _textFormatter;
-        private Comparer<string> _comparer;
-
-        private readonly int _maxConcurrentLookups = 10;
-        private bool _changeMade;
-
-        public DeckManagementForm(Deck deck)
+        public DeckManagementForm()
         {
-            Deck = deck;
-
             InitializeComponent();
-            InitializeAnkiStates();
-            LoadDataFile(deck.FilePath);
-        }
-
-        public void SetDependencies(AnkiProvider ankiProvider, CambridgeProvider cambridgeProvider,
-            IWordInfoFormatter htmlFormatter, IWordInfoFormatter simpleTextFormatter,
-            IWordInfoFormatter textFormatter, Comparer<string> comparer)
-        {
-            _ankiProvider = ankiProvider;
-            _cambridgeProvider = cambridgeProvider;
-
-            _htmlFormatter = htmlFormatter;
-            _simpleTextFormatter = simpleTextFormatter;
-            _textFormatter = textFormatter;
-            _comparer = comparer;
-        }
-
-        private void InitializeAnkiStates()
-        {
-            tbDeckName.Text = Deck.Name;
-
-            if (Deck.ExportOption == "Text")
-                rbText.Checked = true;
-            else
-                rbHtml.Checked = true;
+            Text = Config.ApplicationName + " - Deck Management";
+            LoadDecks();
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(tbDeckName.Text))
-            {
-                MessageBox.Show("Deck name cannot be empty.");
-                return;
-            }
+            if (_changeMade)
+                SaveDecks();
+        }
 
-            var previousDeckName = Deck.Name;
-            Deck.Name = tbDeckName.Text;
-            if (previousDeckName != Deck.Name)
+        private void PopulateListViewFromExistingDecks()
+        {
+            var deckViewItems = new List<DeckViewItem>();
+            var directory = Path.Combine(Config.ApplicationPath, Deck.DefaultDecksPath);
+            if (!Directory.Exists(directory))
+                return;
+
+            var deckFilePaths = Directory.GetFiles(directory, "*." + Config.DefaultDeckFileExtension);
+
+            foreach (var dataFilePath in deckFilePaths)
+            {
+                var deck = new Deck(Path.GetFileNameWithoutExtension(dataFilePath));
+                deckViewItems.Add(new DeckViewItem(deck));
                 _changeMade = true;
-
-            var previousDeckExportOption = Deck.ExportOption;
-            Deck.ExportOption = rbText.Checked ? "Text" : "HTML";
-            if (previousDeckExportOption != Deck.ExportOption)
-                _changeMade = true;
-
-            if (!_changeMade)
-            {
-                DialogResult = DialogResult.Cancel;
-                return;
             }
-
-            Deck.DateModified = DateTime.Now;
-            var wordInfos = lvWords.Items.Cast<WordViewItem>()
-                .Select(wordViewItem => wordViewItem.WordInfo)
-                .Where(wordInfo => wordInfo != null)
-                .OrderBy(a => a.InputWord, _comparer).ToArray();
-            if (previousDeckName == Path.GetFileNameWithoutExtension(Deck.FilePath))
-            {
-                File.Delete(Deck.FilePath);
-                Deck.FilePath = Deck.GetDeckFilePathFromDeckName(Deck.Name);
-                File.WriteAllBytes(Deck.FilePath, CambridgeWordInfo.Serialize(wordInfos));
-            }
-            else
-            {
-                File.WriteAllBytes(Deck.FilePath, CambridgeWordInfo.Serialize(wordInfos));
-            }
-
-            File.WriteAllBytes(Deck.FilePath, CambridgeWordInfo.Serialize(wordInfos));
-            DialogResult = DialogResult.OK;
+            lvDecks.Items.AddRange(deckViewItems.ToArray());
         }
 
-        private async void lvWords_DoubleClick(object sender, EventArgs e)
+        private void LoadDecks()
         {
-            var word = lvWords.SelectedItems[0].Text.Trim().ToLower();
-            if (string.IsNullOrWhiteSpace(word))
-                return;
-
-            var wordViewItem = (lvWords.SelectedItems[0] as WordViewItem);
-            if (wordViewItem.WordInfo.Entries.Count == 0)
+            if (!File.Exists(Config.DeckRepositoryFilePath))
             {
-                wordViewItem.WordInfo = await _cambridgeProvider.GetWordInfo(word);
-                if (wordViewItem.WordInfo == null)
-                    return;
+                PopulateListViewFromExistingDecks();
+                return;
             }
-            rtbWordOutput.Text = _textFormatter.Render(wordViewItem.WordInfo);
-        }
 
-        private void lvWords_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (lvWords.SelectedItems.Count == 0)
-                return;
-            var word = lvWords.SelectedItems[0].Text.Trim().ToLower();
-            if (string.IsNullOrWhiteSpace(word))
-                return;
-            var wordViewItem = (lvWords.SelectedItems[0] as WordViewItem);
-            if (wordViewItem.WordInfo == null)
+            var deckViewItems = new List<DeckViewItem>();
+            var content = File.ReadAllText(Config.DeckRepositoryFilePath);
+            foreach (var deck in JsonConvert.DeserializeObject<Deck[]>(content))
+                deckViewItems.Add(new DeckViewItem(deck));
+            lvDecks.Items.AddRange(deckViewItems.ToArray());
+
+            if (string.IsNullOrWhiteSpace(Config.LastOpenedDeckName))
                 return;
 
-            if (wordViewItem.WordInfo.Entries.Count > 0)
-                rtbWordOutput.Text = _textFormatter.Render(wordViewItem.WordInfo);
-        }
-
-        private void RefreshWordColumn()
-        {
-            if (lvWords.Items.Count == 0)
-                lvWords.Columns[0].Text = "Word";
-            else if (lvWords.Items.Count == 1)
-                lvWords.Columns[0].Text = "Word (1)";
-            else
-                lvWords.Columns[0].Text = $"Words ({lvWords.Items.Count})";
-        }
-
-        private void tsmiLoadWordList_Click(object sender, EventArgs e)
-        {
-            if (lvWords.Items.Count > 0)
+            DeckViewItem lastOpenedDeckViewItem = null;
+            foreach (DeckViewItem deckViewItem in lvDecks.Items)
             {
-                var dialogResult = MessageBox.Show(
-                    "Do you want to start new?\n" +
-                    "-> Yes removes all previous words without saving.\n" +
-                    "-> No adds new words to existing list."
-                    , "AnkiLookup", MessageBoxButtons.YesNoCancel);
-                if (dialogResult == DialogResult.Yes)
-                    lvWords.Items.Clear();
-                else if (dialogResult == DialogResult.Cancel)
-                    return;
-            }
-            using (var dialog = new OpenFileDialog())
-            {
-                if (dialog.ShowDialog() != DialogResult.OK)
-                    return;
-
-                var lines = File.ReadAllLines(dialog.FileName).Distinct().ToArray();
-                if (lines.Length == 0)
-                    return;
-
-                var listViewItems = new List<WordViewItem>();
-                foreach (var line in lines)
+                if (deckViewItem.Deck.Name == Config.LastOpenedDeckName)
                 {
-                    var word = line.Trim().ToLower();
-                    if (!lvWords.Items.ContainsKey(word))
-                        listViewItems.Add(new WordViewItem(line));
+                    lastOpenedDeckViewItem = deckViewItem;
+                    break;
                 }
-                lvWords.Items.AddRange(listViewItems.ToArray());
-                RefreshWordColumn();
-                _changeMade = false;
+            }
+            if (lastOpenedDeckViewItem != null)
+                HandleDeckManagement(lastOpenedDeckViewItem);
+        }
+
+        private void SaveDecks()
+        {
+            var decks = lvDecks.Items.Cast<DeckViewItem>()
+                .Select(deckViewItem => deckViewItem.Deck).ToArray();
+            File.WriteAllText(Config.DeckRepositoryFilePath, JsonConvert.SerializeObject(decks, Config.JsonFormatting));
+
+            Config.LastOpenedDeckName = _lastOpenedDeckName;
+        }
+
+        private void HandleDeckManagement(DeckViewItem deckViewItem)
+        {
+            using (var deckManagementDialog = new WordManagementForm(deckViewItem.Deck))
+            {
+                Hide();
+                var dialogResult = deckManagementDialog.ShowDialog();
+                Show();
+                if (dialogResult != DialogResult.OK)
+                    return;
+
+                _changeMade = true;
+                deckViewItem.Deck = deckManagementDialog.Deck;
+                _lastOpenedDeckName = deckViewItem.Deck.Name;
             }
         }
 
-        private void LoadDataFile(string fileName)
+        private void tsmiAddDeckNew_Click(object sender, EventArgs e)
         {
-            if (!File.Exists(fileName))
-                return;
+            var deckViewItem = new DeckViewItem();
+            lvDecks.Items.Add(deckViewItem);
 
-            var readData = File.ReadAllBytes(fileName);
-            var deserialized = CambridgeWordInfo.Deserialize(readData);
-            if (deserialized.Length == 0)
-                return;
-
-            var listViewItems = new List<WordViewItem>();
-            foreach (var wordInfo in deserialized)
-                listViewItems.Add(new WordViewItem(wordInfo));
-            lvWords.Items.AddRange(listViewItems.ToArray());
-            RefreshWordColumn();
+            HandleDeckManagement(deckViewItem);
+            _changeMade = true;
         }
 
-        private void tsmiLoadDataFile_Click(object sender, EventArgs e)
+        private void tsmiAddDeckFromFile_Click(object sender, EventArgs e)
         {
             using (var dialog = new OpenFileDialog())
             {
                 if (dialog.ShowDialog() != DialogResult.OK)
                     return;
 
-                lvWords.Items.Clear();
-                LoadDataFile(dialog.FileName);
+                var deck = new Deck(Path.GetFileNameWithoutExtension(dialog.FileName), dialog.FileName);
+                var deckViewItem = new DeckViewItem(deck);
+                lvDecks.Items.Add(deckViewItem);
+
+                HandleDeckManagement(deckViewItem);
                 _changeMade = true;
             }
         }
 
-        private async Task LookUpWord(WordViewItem wordViewItem = null, string word = null)
+        private void tsmiManageSelected_Click(object sender, EventArgs e)
         {
-            word = wordViewItem.Text.Trim().ToLower();
-            CambridgeWordInfo wordInfo = null;
-            try
-            {
-                wordInfo = await _cambridgeProvider.GetWordInfo(word);
-                if (wordInfo == null)
-                {
-                    Invoke(new Action(() => wordViewItem.SubItems[2].Text = "Cannot find word."));
-                    Debug.WriteLine($"Error:: Word ({word}): Cannot find word.");
-                    return;
-                }
-                Invoke(new Action(() => wordViewItem.WordInfo = wordInfo));
-                _changeMade = true;
-                await Task.Delay(1000);
-            }
-            catch (Exception exception)
-            {
-                Debug.WriteLine($"Internal Error:: Word ({word}): {exception.Message}");
-            }
-        }
-
-        private async void tsmiGetDefinitionsFromCambridge_Click(object sender, EventArgs e)
-        {
-            if (lvWords.Items.Count == 0)
+            if (lvDecks.SelectedItems.Count == 0)
                 return;
 
-            var trackViewItems = lvWords.Items.Cast<WordViewItem>().ToArray()
-                .Where(wordViewItem => wordViewItem.WordInfo.Entries.Count == 0);
-            await Task.Run(() => trackViewItems.ForEachAsync(_maxConcurrentLookups,
-                async wordViewItem => await LookUpWord(wordViewItem)));
-        }
-
-        private void tsmiExportWordsForAnki_Click(object sender, EventArgs e)
-        {
-            using (var dialog = new FolderBrowserDialog())
-            {
-                dialog.SelectedPath = AppDomain.CurrentDomain.BaseDirectory;
-
-                if (dialog.ShowDialog() != DialogResult.OK)
-                    return;
-                if (lvWords.Items.Count == 0)
-                    return;
-
-                var entries = new List<string>();
-                foreach (WordViewItem wordViewItem in lvWords.Items)
-                {
-                    if (wordViewItem.WordInfo.Entries.Count != 0)
-                        entries.Add(wordViewItem.WordInfo.AsFormatted(_htmlFormatter));
-                }
-                var sortedEntries = entries.ToArray();
-                Array.Sort(sortedEntries, new OrdinalIgnoreCaseComparer());
-
-                var entriesBuilder = new StringBuilder();
-                foreach (var entry in sortedEntries)
-                    entriesBuilder.Append(entry);
-
-                if (entriesBuilder.Length > 2)
-                    entriesBuilder.Length -= 2;
-
-                rtbWordOutput.Text = entriesBuilder.ToString();
-                File.WriteAllText(Path.Combine(dialog.SelectedPath, "Words-AnkiImportReady.txt"), entriesBuilder.ToString());
-            }
-        }
-
-        private void tsmiExportWordList_Click(object sender, EventArgs e)
-        {
-            using (var dialog = new FolderBrowserDialog())
-            {
-                dialog.SelectedPath = AppDomain.CurrentDomain.BaseDirectory;
-
-                if (dialog.ShowDialog() != DialogResult.OK)
-                    return;
-                if (lvWords.Items.Count == 0)
-                    return;
-
-                var entries = new List<string>();
-                foreach (WordViewItem wordViewItem in lvWords.Items)
-                    entries.Add(wordViewItem.WordInfo.InputWord);
-                var sortedEntries = entries.ToArray();
-                Array.Sort(sortedEntries, new OrdinalIgnoreCaseComparer());
-
-                var entriesBuilder = new StringBuilder();
-                foreach (var entry in sortedEntries)
-                    entriesBuilder.AppendLine(entry);
-
-                if (entriesBuilder.Length > 2)
-                    entriesBuilder.Length -= 2;
-
-                rtbWordOutput.Text = entriesBuilder.ToString();
-                File.WriteAllText(Path.Combine(dialog.SelectedPath, "Words-WordList.txt"), entriesBuilder.ToString());
-            }
+            var deckViewItem = lvDecks.SelectedItems[0] as DeckViewItem;
+            HandleDeckManagement(deckViewItem);
         }
 
         private void tsmiDeleteSelected_Click(object sender, EventArgs e)
         {
-            bool localChangesMade = false;
-            foreach (ListViewItem selectedItem in lvWords.SelectedItems)
-            {
-                lvWords.Items.Remove(selectedItem);
-                localChangesMade = true;
-                _changeMade = true;
-            }
-            if (!localChangesMade)
+            if (lvDecks.SelectedItems.Count == 0)
                 return;
 
-            RefreshWordColumn();
-            rtbWordOutput.Text = string.Empty;
+            lvDecks.Items.Remove(lvDecks.SelectedItems[0]);
+            _changeMade = true;
         }
 
-        private void tsmiAddWord_Click(object sender, EventArgs e)
+        private void lvDecks_DoubleClick(object sender, EventArgs e)
         {
-            var wordInfos = lvWords.GetAsWordInfoList();
-
-            var wordViewItem = new WordViewItem(string.Empty);
-            lvWords.Items.Add(wordViewItem);
-
-            using (var dialog = new EditWordInfoForm(this, Job.Add, _cambridgeProvider, wordViewItem.WordInfo, ref wordInfos))
-            {
-                if (dialog.ShowDialog() != DialogResult.OK)
-                {
-                    RemoveItemByWordInfo(wordViewItem.WordInfo, false);
-                    return;
-                }
-
-                wordViewItem.WordInfo = dialog.WordInfo;
-                RefreshWordColumn();
-                _changeMade = true;
-            }
+            tsmiManageSelected_Click(this, null);
         }
-
-        private void tsmiEditWord_Click(object sender, EventArgs e)
+       
+        private async void tsmiImportToAnki_Click(object sender, EventArgs e)
         {
-            if (lvWords.SelectedItems.Count == 0)
+            if (lvDecks.SelectedItems.Count == 0)
                 return;
 
-            var wordViewItem = lvWords.SelectedItems[0] as WordViewItem;
-            var wordInfo = wordViewItem.WordInfo;
-            var wordInfos = lvWords.GetAsWordInfoList();
+            var startTime = DateTime.Now;
 
-            using (var dialog = new EditWordInfoForm(this, Job.Edit, _cambridgeProvider, wordInfo, ref wordInfos))
+            var deckImportErrorCount = 0;
+            var sb = new StringBuilder();
+            foreach (DeckViewItem deckViewItem in lvDecks.SelectedItems)
             {
-                var dialogResult = dialog.ShowDialog();
-                if (dialogResult == DialogResult.Cancel)
+                deckViewItem.SubItems[2].Text = "Importing..";
+
+                var deck = deckViewItem.Deck;
+                var wordsToImport = GetWordsFromDeck(deckViewItem.Deck);
+
+                (Word[] SuccessfulWords, List<string> ErrorWordStrings) = await ImportDeck(deck, wordsToImport);
+                if (SuccessfulWords == null)
                 {
-                    RemoveItemByWordInfo(wordViewItem.WordInfo, true);
-                    return;
-                }
-                else if (dialogResult != DialogResult.OK)
-                    return;
+                    sb.AppendLine($"Failed importing all words from deck \"{deck.Name}\".");
+                    deckImportErrorCount++;
 
-                dialog.WordInfo.ImportedIntoAnki = default(DateTime);
-                wordViewItem.WordInfo = dialog.WordInfo;
-                rtbWordOutput.Text = _textFormatter.Render(dialog.WordInfo);
-                _changeMade = true;
-            }
-        }
+                    if (deckImportErrorCount == 2)
+                    {
+                        var dialogResult = MessageBox.Show("Multiple decks failed to import. Would you like to stop importing the other decks?",
+                            Config.ApplicationName + $" - Importing \"{deck.Name}\"",
+                            MessageBoxButtons.YesNo);
+                        if (dialogResult == DialogResult.Yes)
+                            return;
+                    }
 
-        private void tsmiClearImportStates_Click(object sender, EventArgs e)
-        {
-            foreach (WordViewItem wordViewItem in lvWords.Items)
-            {
-                wordViewItem.WordInfo.AddedBefore = false;
-                wordViewItem.WordInfo.ImportedIntoAnki = default(DateTime);
-                wordViewItem.Refresh();
-
-                _changeMade = true;
-            }
-        }
-
-        private void lvWords_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            if (lvWords.SelectedItems.Count > 0)
-                tsmiEditWord_Click(null, null);
-        }
-
-        public void RemoveItemByWordInfo(CambridgeWordInfo wordInfo, bool monitorChangesMade)
-        {
-            bool localChangesMade = false;
-            foreach (WordViewItem wordViewItem in lvWords.Items)
-            {
-                if (wordViewItem.WordInfo != wordInfo)
+                    deckViewItem.Refresh();
                     continue;
+                }
+                for (int i = 0; i < wordsToImport.Length; i++)
+                {
+                    var successfulWord = SuccessfulWords.FirstOrDefault(word => wordsToImport[i].InputWord == word.InputWord);
+                    if (successfulWord != null)
+                        wordsToImport[i] = successfulWord;
+                }
 
-                lvWords.Items.Remove(wordViewItem);
-                localChangesMade = true;
-                if (monitorChangesMade)
-                    _changeMade = true;
+                sb.AppendLine($"Successfully imported {(ErrorWordStrings.Count == 0 ? "all" : "some")} words from deck \"{deck.Name}\".");
+                if (ErrorWordStrings.Count != 0)
+                {
+                    var plural = ErrorWordStrings.Count != 1 ? "s" : string.Empty;
+                    sb.AppendLine($"Error{plural}:\n{string.Join(Environment.NewLine, ErrorWordStrings)}.");
+                }
+                SaveDeck(deck, wordsToImport);
+                deckViewItem.Refresh();
             }
-            if (!localChangesMade)
-                return;
+            _changeMade = true;
+            MessageBox.Show(sb.ToString());
 
-            RefreshWordColumn();
-            rtbWordOutput.Text = string.Empty;
+            var date = startTime.ToString("G").Replace("/", "-").Replace(":", ".");
+            var logFileName = "Import Log (" + date + ").txt";
+            File.WriteAllText(logFileName, sb.ToString());
+        }
+
+        private void lvDecks_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.A || !e.Control)
+                return;
+            foreach (ListViewItem item in lvDecks.Items)
+                item.Selected = true;
+        }
+
+        public static Word[] GetWordsFromDeck(Deck deck)
+        {
+            var content = File.ReadAllText(deck.FilePath);
+            return Word.Deserialize(content);
+        }
+
+        public static async Task<(Word[] SuccessfulWords, List<string> ErrorWordStrings)> ImportDeck(Deck deck, Word[] wordsToImport)
+        {
+            var formatter = deck.ExportOption == "Text" ? Config.SimpleTextFormatter : Config.HtmlFormatter;
+            var modelName = deck.ExportOption == "Text" ? "Basic" : Config.DefaultHtmlCardModel;
+
+            var ankiProcess = Process.GetProcessesByName("anki").FirstOrDefault();
+            if (ankiProcess == null)
+            {
+                MessageBox.Show("Anki is not running. Make sure Anki (with AnkiConnect installed) is running.");
+                return (null, null);
+            }
+
+            try
+            {
+                (bool checkIfExisting, Word[] wordsToProcessFiltered) = await GetItemsToProcess();
+                if (wordsToProcessFiltered.Length == 0)
+                    throw new Exception("No items left to process.");
+                if (!await Config.AnkiProvider.CreateDeck(deck.Name))
+                    throw new Exception("Could not create new deck.");
+                if (deck.ExportOption == "HTML" && !await Config.AnkiProvider.AddModel(Config.DefaultHtmlCardModel, Properties.Resources.HtmlFront, Properties.Resources.HtmlBack, Properties.Resources.HtmlCss))
+                    throw new Exception("Could not create html card model.");
+                return await ImportToAnki(checkIfExisting, wordsToProcessFiltered);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            return (null, null);
+
+            void SetWordCollectionImportDate(Word[] words, DateTime importDate)
+            {
+                foreach (var word in words)
+                    word.ImportDate = importDate;
+            }
+
+            async Task<(bool, Word[])> GetItemsToProcess()
+            {
+                var checkIfExisting = true;
+
+                var wordsToProcess = wordsToImport;
+                var existingIds = await Config.AnkiProvider.GetDeckNotes(deck.Name);
+                if (existingIds != null && existingIds.Count != 0 &&
+                    MessageBox.Show("Deck with words already exists in Anki. Do you want to reset the imported words? This will remove any deck progress.", Config.ApplicationName, MessageBoxButtons.YesNoCancel) == DialogResult.Yes)
+                {
+                    checkIfExisting = false;
+                    if (await Config.AnkiProvider.DeleteDeck(deck.Name))
+                        SetWordCollectionImportDate(wordsToProcess, default);
+                    else
+                        throw new Exception("Could not delete existing deck.");
+                }
+                else
+                    wordsToProcess = wordsToProcess.Where(word => word.ImportDate == default).ToArray();
+                return (checkIfExisting, wordsToProcess.Where(word => word.Entries.Count > 0).ToArray());
+            }
+
+            async Task<(Word[], List<string> errorWordStrings)> ImportToAnki(bool checkIfExisting, Word[] words)
+            {
+                var success = false;
+                var errorWordStrings = new List<string>();
+
+                if (words.Length == 1)
+                {
+                    success = await Config.AnkiProvider.AddNote(deck.Name, modelName, words[0], formatter, checkIfExisting);
+                    if (!success)
+                        errorWordStrings.Add(words[0].InputWord);
+                }
+                else if (words.Length > 1)
+                {
+                    words = words.OrderBy(a => a.InputWord, Config.Comparer).ToArray();
+                    var (result, ErrorWords) = await Config.AnkiProvider.AddNotes(deck.Name, modelName, words, formatter);
+                    if (result)
+                    {
+                        success = true;
+                        errorWordStrings.AddRange(ErrorWords);
+                    }
+                }
+
+                if (!success)
+                {
+                    MessageBox.Show("Error importing into Anki.");
+                    return (null, null);
+                }
+
+                var successfulWords = words.Where(word => !errorWordStrings.Contains(word.InputWord)).ToArray();
+                SetWordCollectionImportDate(successfulWords, DateTime.Now);
+                return (successfulWords, errorWordStrings);
+            }
+        }
+
+        public static void SaveDeck(Deck deck, Word[] words)
+        {
+            deck.DateModified = DateTime.Now;
+            Directory.CreateDirectory(Deck.DefaultDecksPath);
+            File.WriteAllText(deck.FilePath, Word.Serialize(words));
         }
     }
 }

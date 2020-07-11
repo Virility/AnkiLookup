@@ -1,4 +1,4 @@
-﻿using AnkiLookup.Core.Helpers;
+﻿using AnkiLookup.Core.Helpers.Formatters;
 using AnkiLookup.Core.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -70,6 +70,40 @@ namespace AnkiLookup.Core.Providers
             }
         }
 
+
+        public async Task<bool> MoveDeck(string oldDeckName, string newDeckName = null)
+        {
+            try
+            {
+                var existingIds = await GetDeckCards(oldDeckName);
+                var exists = existingIds != null && existingIds.Count != 0;
+                if (!exists)
+                    return false;
+
+                var data = JsonConvert.SerializeObject(new
+                {
+                    action = "changeDeck",
+                    version = 6,
+                    @params = new
+                    {
+                        deck = newDeckName,
+                        cards = existingIds
+                    }
+                });
+
+                var response = await _client.PostAsync(_client.BaseAddress, new StringContent(data)).ConfigureAwait(false);
+                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                //return content == "{\"result\": null, \"error\": null}";
+
+                dynamic deserialized = JsonConvert.DeserializeObject(content);
+                return deserialized.error == null && deserialized.result == null;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         private dynamic CreateNote(string deckName, string modelName, string front, string back)
         {
             dynamic note = new ExpandoObject();
@@ -92,11 +126,28 @@ namespace AnkiLookup.Core.Providers
             return note;
         }
 
-        public Task<bool> AddNote(string deckName, string modelName, CambridgeWordInfo wordInfo, IWordInfoFormatter formatter, bool checkIfExisting = false)
+        public Task<bool> AddNote(string deckName, string modelName, Word word, IWordFormatter formatter, bool checkIfExisting = false)
         {
-            var front = wordInfo.InputWord;
-            var back = wordInfo.AsFormatted(formatter);
+            var front = word.InputWord;
+            var back = word.AsFormatted(formatter);
             return AddNote(deckName, modelName, front, back, checkIfExisting);
+        }
+
+        public async Task<List<long>> GetDeckCards(string deckName, string additionalQuery = null)
+        {
+            var query = $"deck:\"{deckName}\"";
+            if (!string.IsNullOrWhiteSpace(additionalQuery))
+                query += " " + additionalQuery;
+            return await FindCards(query).ConfigureAwait(false);
+        }
+
+
+        public async Task<List<long>> GetDeckNotes(string deckName, string additionalQuery = null)
+        {
+            var query = $"deck:\"{deckName}\"";
+            if (additionalQuery != null)
+                query += " " + additionalQuery;
+            return await FindNotes(query).ConfigureAwait(false);
         }
 
         public async Task<bool> AddNote(string deckName, string modelName, string front, string back, bool checkIfExisting = false)
@@ -105,8 +156,9 @@ namespace AnkiLookup.Core.Providers
             {
                 if (checkIfExisting)
                 {
-                    var existingIds = await FindNotes($"deck:\"{deckName}\" front:\"{front}\"").ConfigureAwait(false);
-                    if (existingIds != null && existingIds.Count != 0)
+                    var existingIds = await GetDeckNotes(deckName, $"front:\"{front}\"");
+                    var exists = existingIds != null && existingIds.Count != 0;
+                    if (exists)
                         return await UpdateNoteFields(existingIds[0], front, back).ConfigureAwait(false);
                 }
 
@@ -152,6 +204,32 @@ namespace AnkiLookup.Core.Providers
             return content.Contains("\"error\": null");
         }
 
+        private async Task<List<long>> FindCards(string query)
+        {
+            var postData = new
+            {
+                action = "findCards",
+                version = 6,
+                @params = new
+                {
+                    query
+                }
+            };
+            var data = JsonConvert.SerializeObject(postData);
+
+            var response = await _client.PostAsync(_client.BaseAddress, new StringContent(data)).ConfigureAwait(false);
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            dynamic deserialized = JsonConvert.DeserializeObject(content);
+            if (deserialized.error != null)
+                return null;
+
+            var ids = new List<long>();
+            foreach (JValue item in deserialized["result"])
+                ids.Add((long)item);
+            return ids;
+        }
+
+
         private async Task<List<long>> FindNotes(string query)
         {
             var postData = new
@@ -177,7 +255,7 @@ namespace AnkiLookup.Core.Providers
             return ids;
         }
 
-        public async Task<(bool Success, List<string> ErrorWords)> AddNotes(string deckName, string modelName, List<CambridgeWordInfo> words, IWordInfoFormatter formatter)
+        public async Task<(bool Success, List<string> ErrorWords)> AddNotes(string deckName, string modelName, Word[] words, IWordFormatter formatter)
         {
             try
             {
@@ -220,25 +298,7 @@ namespace AnkiLookup.Core.Providers
             }
         }
 
-
-        public dynamic CreateNoteModel(string name, string front, string style, string back)
-        {
-            dynamic model = new ExpandoObject();
-            model.name = name;
-            model.css = style;
-            model.tmpls = new[]
-            {
-                new {
-                    name = "Card 1",
-                    qfmt = front,
-                    afmt = back
-                }
-            };
-
-            return model;
-        }
-
-        public async Task<bool> AddModel(string name, string front, string style, string back)
+        public async Task<bool> AddModel(string name, string front, string back, string style)
         {
             dynamic noteModel = new ExpandoObject();
             noteModel.name = name;

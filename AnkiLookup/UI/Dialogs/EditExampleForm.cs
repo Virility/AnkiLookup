@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace AnkiLookup.UI.Models
+namespace AnkiLookup.UI.Dialogs
 {
     public partial class EditExampleForm : Form
     {

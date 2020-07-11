@@ -5,18 +5,14 @@ namespace AnkiLookup.Core.Models
 {
     public class Deck
     {
-#if DEBUG
-        private const string DefaultDeckName = "Vocabulary-TEST";
-#else
-        private const string DefaultDeckName = "Vocabulary";
-#endif
+        public static Deck DefaultDeck = new Deck("Vocabulary");
 
-        private readonly static string DefaultFilePath = GetDeckFilePathFromDeckName();
         private const string DefaultExportOption = "Text";
+        public const string DefaultDecksPath = "Decks/";
 
-        public string Name { get; set; } = DefaultDeckName;
+        public string Name { get; set; }
 
-        public string FilePath { get; set; } = DefaultFilePath;
+        public string FilePath { get; set; }
 
         public DateTime DateCreated { get; set; } = DateTime.Now;
 
@@ -24,10 +20,15 @@ namespace AnkiLookup.Core.Models
 
         public string ExportOption { get; set; } = DefaultExportOption;
 
-        public static string GetDeckFilePathFromDeckName(string deckName = null)
+        public static string GetDeckFilePathFromDeckName(string deckName)
         {
-            deckName = string.IsNullOrWhiteSpace(deckName) ? DefaultDeckName : deckName;
-            return Path.Combine(Config.ApplicationPath, deckName + ".dat");
+            return Path.Combine(DefaultDecksPath, deckName + "." + Config.DefaultDeckFileExtension);
+        }
+
+        public Deck(string name, string filePath = null)
+        {
+            Name = name;
+            FilePath = string.IsNullOrWhiteSpace(filePath) ? GetDeckFilePathFromDeckName(name) : filePath;
         }
     }
 }

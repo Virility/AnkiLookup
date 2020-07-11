@@ -21,28 +21,31 @@ namespace AnkiLookup.UI.Controls
             if (_deck == null)
                 return;
 
-            Text = _deck.Name;
-            Name = _deck.Name;
+            var i = 0;
+            Text = Name = _deck.Name;
+            i++;
 
             var data = _deck.DateCreated.ToShortDateString();
-            if (SubItems.Count > 1)
-                SubItems[1].Text = data;
+            if (SubItems.Count > i)
+                SubItems[i].Text = data;
             else
                 SubItems.Add(data);
+            i++;
 
-            if (_deck.DateModified != default(DateTime))
+            if (_deck.DateModified != default)
                 data = _deck.DateModified.ToShortDateString();
             else
                 data = "Not Modified";
-            if (SubItems.Count > 2)
-                SubItems[2].Text = data;
+            if (SubItems.Count > i)
+                SubItems[i].Text = data;
             else
                 SubItems.Add(data);
+            i++;
         }
 
         public DeckViewItem(Deck deck = null)
         {
-            Deck = (deck == null) ? new Deck() : deck;
+            Deck = deck ?? Deck.DefaultDeck;
         }
     }
 }

@@ -1,8 +1,9 @@
-﻿namespace AnkiLookup.UI.Models
+﻿namespace AnkiLookup.UI.Dialogs
 {
     public enum Job
     {
         Add,
-        Edit
+        Edit,
+        None
     }
 }

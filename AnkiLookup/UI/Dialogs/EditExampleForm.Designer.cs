@@ -1,4 +1,4 @@
-﻿namespace AnkiLookup.UI.Models
+﻿namespace AnkiLookup.UI.Dialogs
 {
     partial class EditExampleForm
     {
@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EditExampleForm));
             this.rtbDefinition = new System.Windows.Forms.RichTextBox();
             this.bOK = new System.Windows.Forms.Button();
             this.lbDefinition = new System.Windows.Forms.Label();
@@ -86,6 +87,7 @@
             this.Controls.Add(this.bOK);
             this.Controls.Add(this.lbDefinition);
             this.Font = new System.Drawing.Font("Verdana", 8.25F);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "EditExampleForm";
             this.Text = "EditExampleForm";
             this.ResumeLayout(false);

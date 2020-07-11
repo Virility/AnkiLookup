@@ -1,33 +1,157 @@
-﻿using System.Windows.Forms;
+﻿using AnkiLookup.Core.Models;
+using System.Windows.Forms;
+using AnkiLookup.UI.Controls;
+using System;
 
-namespace AnkiLookup.UI.Models
+namespace AnkiLookup.UI.Dialogs
 {
     public partial class EditWordDefinitionForm : Form
     {
-        public int EntryIndex { get { return (int) nudEntryIndex.Value; } set { nudEntryIndex.Value = value; } }
+        private readonly Word _word;
+        private readonly DefinitionViewItem _definitionViewItem;
 
-        public string Word { get { return tbWord.Text; } set { tbWord.Text = value; } }
-
-        public string Label { get { return cbLabel.Text; } set { cbLabel.Text = value; } }
+        public readonly Word BackupWord;
 
         public string Definition { get { return rtbDefinition.Text; } set { rtbDefinition.Text = value; } }
 
-        public EditWordDefinitionForm(int entryCount, string word, string label = null, string definition = null)
+        public EditWordDefinitionForm(DefinitionViewItem definitionViewItem, Job job)
         {
             InitializeComponent();
 
-            nudEntryIndex.Maximum = entryCount;
-            if (entryCount != 0)
-                nudEntryIndex.Value = entryCount - 1;
+            _word = definitionViewItem.Word;
+            _definitionViewItem = definitionViewItem;
 
-            Word = word;
-            if (!string.IsNullOrWhiteSpace(definition))
-                Definition = definition;
+            tbWord.Text = _word.InputWord;
 
-            if (string.IsNullOrWhiteSpace(label))
-                cbLabel.SelectedIndex = 0;
+            Word.Entry entry;
+            if (job == Job.Add)
+            {
+                definitionViewItem.EntryIndex = 0;
+                definitionViewItem.DefinitionIndex = 0;
+             
+                entry = _word.Entries[definitionViewItem.EntryIndex];
+                entry.Label = cbLabel.Items[0].ToString();
+                entry.Definitions.Add(new Word.Block(string.Empty));
+            }
             else
-                cbLabel.SelectedItem = label;
+            {
+                entry = _word.Entries[definitionViewItem.EntryIndex];
+                rtbDefinition.Text = entry.Definitions[definitionViewItem.DefinitionIndex].Definition;
+            }
+
+            cbLabel.SelectedItem = entry.Label;
+            cbLabel.SelectedValueChanged += new EventHandler(cbLabel_SelectedValueChanged);
+        }
+
+        private void bOK_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(cbLabel.Text))
+            {
+                MessageBox.Show("A label must be selected to classify this word.");
+                return;
+            }
+
+            DialogResult = DialogResult.OK;
+        }
+
+        private (int entryIndex, int count) GetLabelInfo(string label)
+        {
+            int entryIndex = 0;
+            for (; entryIndex < _word.Entries.Count; entryIndex++)
+            {
+                var entry = _word.Entries[entryIndex];
+                if (entry.Label == label)
+                    return (entryIndex, count: entry.Definitions.Count);
+            }
+            return (entryIndex: entryIndex + 1, count: 0);
+        }
+
+        private void nudDefinitionIndex_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        public static int RemoveDefinitionViewItem(DefinitionViewItem definitionViewItem)
+        {
+            var listView = definitionViewItem.ListView;
+            var word = definitionViewItem.Word;
+            var entryIndex = definitionViewItem.EntryIndex;
+            var definitionIndex = definitionViewItem.DefinitionIndex;
+
+            var entryDeleted = false;
+            if (word.Entries.Count > 0)
+            {
+                word.Entries[entryIndex].Definitions.RemoveAt(definitionIndex);
+
+                if (word.Entries[entryIndex].Definitions.Count == 0)
+                {
+                    word.Entries.RemoveAt(entryIndex);
+                    entryDeleted = true;
+                }
+            }
+            listView.Items.Remove(definitionViewItem);
+
+            for (int currentIndex = 0; currentIndex < listView.Items.Count; currentIndex++)
+            {
+                definitionViewItem = listView.Items[currentIndex] as DefinitionViewItem;
+                var currentEntryIndex = definitionViewItem.EntryIndex;
+                var currentDefinitionIndex = definitionViewItem.DefinitionIndex;
+
+                if (entryDeleted && currentEntryIndex > entryIndex)
+                    definitionViewItem.EntryIndex--;
+                else if (entryIndex == currentEntryIndex && currentDefinitionIndex > definitionIndex)
+                    definitionViewItem.DefinitionIndex--;
+            }
+
+            return definitionIndex;
+        }
+
+        private void cbLabel_SelectedValueChanged(object sender, EventArgs e)
+        {
+            int GetLastDefinitionIndexFromEntryIndex(int entryIndex)
+            {
+                var index = 0;
+                for (int i = 0; i < _word.Entries.Count; i++)
+                {
+                    index += _word.Entries[i].Definitions.Count;
+                    if (i == entryIndex)
+                        break;
+                }
+                return index - 1;
+            }
+
+            var oldEntry = _word.Entries[_definitionViewItem.EntryIndex];
+            var wordString = oldEntry.ActualWord;
+            var block = oldEntry.Definitions[_definitionViewItem.DefinitionIndex];
+
+            var listView = _definitionViewItem.ListView;
+            listView.BeginUpdate();
+
+            // Remove
+            RemoveDefinitionViewItem(_definitionViewItem);
+
+            // Reorganize
+            var label = cbLabel.SelectedItem.ToString();
+            var (labelEntryIndex, count) = GetLabelInfo(label);
+            if (count == 0)
+            {
+                _word.Entries.Add(new Word.Entry(wordString, label, block));
+                _definitionViewItem.EntryIndex = labelEntryIndex - 1;
+            }
+            else
+            {
+                _word.Entries[labelEntryIndex].Definitions.Add(block);
+                _definitionViewItem.EntryIndex = labelEntryIndex;
+            }
+            _definitionViewItem.DefinitionIndex = count;
+            _definitionViewItem.Refresh();
+
+            // Add
+            var destination = GetLastDefinitionIndexFromEntryIndex(labelEntryIndex);
+            listView.Items.Insert(destination, _definitionViewItem);
+            _definitionViewItem.EnsureVisible();
+
+            listView.EndUpdate();
         }
     }
 }

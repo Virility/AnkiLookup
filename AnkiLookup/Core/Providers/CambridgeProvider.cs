@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AngleSharp.Dom;
-using AngleSharp.Parser.Html;
+using AngleSharp.Html.Parser;
 using AnkiLookup.Core.Models;
 
 namespace AnkiLookup.Core.Providers
@@ -26,46 +26,46 @@ namespace AnkiLookup.Core.Providers
             _client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0");
         }
 
-        public async Task<CambridgeWordInfo> GetWordInfo(string word)
+        public async Task<Word> GetWord(string wordText)
         {
-            var urlEncodedWord = WebUtility.UrlEncode(word);
+            var urlEncodedWord = WebUtility.UrlEncode(wordText);
             var response = await _client.GetStringAsync($"/us/dictionary/english/{urlEncodedWord}");
             if (response.Contains("Popular searches"))
                 response = await _client.GetStringAsync($"/search/english/direct/?q={urlEncodedWord}");
 
             var parser = new HtmlParser();
-            var document = parser.Parse(response);
+            var document = parser.ParseDocument(response);
 
-            var dataSetSelector = GetSelectorFromDataSet(DataSet);
+            var dataSetSelector = "div.entry";//GetSelectorFromDataSet(DataSet);
             var dataSetElement = document.QuerySelector(dataSetSelector);
             if (dataSetElement == null)
                 return null;
 
-            var wordInfo = new CambridgeWordInfo();
-            wordInfo.InputWord = word;
+            var word = new Word();
+            word.InputWord = wordText;
             foreach (var entryElement in dataSetElement.QuerySelectorAll(".entry-body > div"))
             {
                 var parsedEntry = ParseEntryFromEntryElement(entryElement);
                 if (parsedEntry != null)
-                    wordInfo.Entries.Add(ParseEntryFromEntryElement(entryElement));
+                    word.Entries.Add(parsedEntry);
             }
-            return wordInfo;
+            return word;
         }
 
-        private static string GetSelectorFromDataSet(CambridgeDataSet dataSet)
-        {
-            if (dataSet == CambridgeDataSet.British)
-                return "div#dataset-cald4";
-            if (dataSet == CambridgeDataSet.American)
-                return "div#dataset-cacd";
-            if (dataSet == CambridgeDataSet.Business)
-                return "div#dataset-business-english";
-            return string.Empty;
-        }
+        //private static string GetSelectorFromDataSet(CambridgeDataSet dataSet)
+        //{
+        //    if (dataSet == CambridgeDataSet.British)
+        //        return "div#dataset-cald4";
+        //    if (dataSet == CambridgeDataSet.American)
+        //        return "div#dataset-cacd";
+        //    if (dataSet == CambridgeDataSet.Business)
+        //        return "div#dataset-business-english";
+        //    return string.Empty;
+        //}
 
-        private static CambridgeWordInfo.Entry ParseEntryFromEntryElement(IParentNode entryElement)
+        private static Word.Entry ParseEntryFromEntryElement(IParentNode entryElement)
         {
-            var entry = new CambridgeWordInfo.Entry();
+            var entry = new Word.Entry();
 
             var headWordElement = entryElement.QuerySelector(".headword > span.hw");
             if (headWordElement == null)
@@ -83,21 +83,20 @@ namespace AnkiLookup.Core.Providers
             return entry;
         }
 
-        private static List<CambridgeWordInfo.Block> ParseDefBlocksFromEntryElement(IParentNode entryElement)
+        private static List<Word.Block> ParseDefBlocksFromEntryElement(IParentNode entryElement)
         {
-            var blocks = new List<CambridgeWordInfo.Block>();
+            var blocks = new List<Word.Block>();
             foreach (var defBlockElement in entryElement.QuerySelectorAll("div.def-block"))
             {
-                var definitionTextElement = defBlockElement.QuerySelector("p > b.def");
+                var definitionTextElement = defBlockElement.QuerySelector("div.def");
                 if (definitionTextElement == null)
                     continue;
 
-                var block = new CambridgeWordInfo.Block();
-                block.Definition = Regex.Replace(definitionTextElement.TextContent, @"\s+", " ");
+                var block = new Word.Block(Regex.Replace(definitionTextElement.TextContent, @"\s+", " "));
                 if (block.Definition.EndsWith(": "))
                     block.Definition = block.Definition.Substring(0, block.Definition.Length - 2);
 
-                var exampleElements = defBlockElement.QuerySelectorAll("span > div.examp");
+                var exampleElements = defBlockElement.QuerySelectorAll("div.examp");
                 if (exampleElements.Length > 0)
                     block.Examples = new List<string>(exampleElements.Select(exampleElement => exampleElement.TextContent.Trim()));
 

@@ -1,20 +1,22 @@
 ﻿using System.Text;
-using System.Web;
 using AnkiLookup.Core.Models;
 
-namespace AnkiLookup.Core.Helpers
+namespace AnkiLookup.Core.Helpers.Formatters
 {
-    public class SimpleTextFormatter : IWordInfoFormatter
+    public class TextFormatter : IWordFormatter
     {
-        public string Render(CambridgeWordInfo wordInfo)
+        public string Render(Word word)
         {
+            if (word.Entries.Count == 0)
+                return string.Empty;
+
             var sb = new StringBuilder();
 
-            for (var i = 0; i < wordInfo.Entries.Count; i++)
+            for (var i = 0; i < word.Entries.Count; i++)
             {
-                var entry = wordInfo.Entries[i];
+                var entry = word.Entries[i];
 
-                if (i != 0 && wordInfo.Entries.Count > 1 && wordInfo.Entries[i - 1].ActualWord != entry.ActualWord)
+                if (i == 0 || word.Entries.Count > 1 && word.Entries[i - 1].ActualWord != entry.ActualWord)
                     sb.AppendLine(entry.ActualWord);
 
                 if (!string.IsNullOrWhiteSpace(entry.Label))
@@ -35,8 +37,10 @@ namespace AnkiLookup.Core.Helpers
 
                 sb.AppendLine();
             }
+            if (sb.Length == 0)
+                return string.Empty;
 
-            var sbText = sb.ToString().Replace("\r\n", "<br>");
+            var sbText = sb.ToString();
             return sbText.Substring(0, sbText.Length - 1);
         }
     }
