@@ -8,6 +8,16 @@ namespace AnkiLookup.Core.Models
 {
     public class Word
     {
+        public static string Serialize(Word[] words)
+        {
+            return JsonConvert.SerializeObject(words, Config.JsonFormatting);
+        }
+
+        public static Word[] Deserialize(string content)
+        {
+            return JsonConvert.DeserializeObject<Word[]>(content);
+        }
+
         public class Entry
         {
             public string ActualWord { get; set; }
@@ -44,17 +54,6 @@ namespace AnkiLookup.Core.Models
         public List<Entry> Entries { get; set; } = new List<Entry>();
 
         public DateTime ImportDate { get; set; }
-
-
-        public static string Serialize(Word[] words)
-        {
-            return JsonConvert.SerializeObject(words, Config.JsonFormatting);
-        }
-
-        public static Word[] Deserialize(string content)
-        {
-            return JsonConvert.DeserializeObject<Word[]>(content);
-        }
 
         public string AsFormatted(IWordFormatter formatter)
         {

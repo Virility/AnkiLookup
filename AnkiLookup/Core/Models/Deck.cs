@@ -5,10 +5,16 @@ namespace AnkiLookup.Core.Models
 {
     public class Deck
     {
+        public const string DefaultDecksPath = "Decks/";
+
         public static Deck DefaultDeck = new Deck("Vocabulary");
 
+        public static string GetDeckFilePathFromDeckName(string deckName)
+        {
+            return Path.Combine(DefaultDecksPath, deckName + "." + Config.DefaultDeckFileExtension);
+        }
+
         private const string DefaultExportOption = "Text";
-        public const string DefaultDecksPath = "Decks/";
 
         public string Name { get; set; }
 
@@ -19,11 +25,6 @@ namespace AnkiLookup.Core.Models
         public DateTime DateModified { get; set; }
 
         public string ExportOption { get; set; } = DefaultExportOption;
-
-        public static string GetDeckFilePathFromDeckName(string deckName)
-        {
-            return Path.Combine(DefaultDecksPath, deckName + "." + Config.DefaultDeckFileExtension);
-        }
 
         public Deck(string name, string filePath = null)
         {

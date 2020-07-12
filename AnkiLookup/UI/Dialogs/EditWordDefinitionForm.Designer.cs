@@ -129,6 +129,7 @@
             this.cbLabel.Size = new System.Drawing.Size(203, 25);
             this.cbLabel.TabIndex = 13;
             this.cbLabel.Text = "adjective";
+            this.cbLabel.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbLabel_KeyDown);
             // 
             // EditWordDefinitionForm
             // 

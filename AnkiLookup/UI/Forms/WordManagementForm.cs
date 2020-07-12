@@ -345,7 +345,11 @@ namespace AnkiLookup.UI.Forms
                     .Select(x => x.Trim())
                     .Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
                 for (int index = 0; index < words.Length; index++)
-                    lvWords.Items.Add(new WordViewItem(words[index]));
+                {
+                    var wordViewItem = new WordViewItem(words[index]);
+                    wordViewItem.Refresh();
+                    lvWords.Items.Add(wordViewItem);
+                }
                 RefreshWordColumn();
                 _changeMade = true;
             }
@@ -403,10 +407,17 @@ namespace AnkiLookup.UI.Forms
 
         private void LvWords_ColumnClick(object sender, ColumnClickEventArgs e)
         {
+            ListViewItem selectedListViewItem = null;
+            if (lvWords.SelectedItems.Count != 0)
+                selectedListViewItem = lvWords.SelectedItems[0];
+
             var comparer = lvWords.ListViewItemSorter as ListViewItemComparer;
             if (e.Column != comparer.Column)
                 comparer.Column = e.Column;
             lvWords.Sorting = lvWords.Sorting == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
+
+            if (selectedListViewItem != null)
+                selectedListViewItem.EnsureVisible();
         }
 
         private async void tbDeckName_KeyDown(object sender, KeyEventArgs e)
