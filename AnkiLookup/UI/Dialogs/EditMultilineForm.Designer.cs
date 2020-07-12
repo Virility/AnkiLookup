@@ -1,6 +1,6 @@
 ﻿namespace AnkiLookup.UI.Dialogs
 {
-    partial class EditExampleForm
+    partial class EditMultilineForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,23 +28,23 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EditExampleForm));
-            this.rtbDefinition = new System.Windows.Forms.RichTextBox();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EditMultilineForm));
+            this.rtbContent = new System.Windows.Forms.RichTextBox();
             this.bOK = new System.Windows.Forms.Button();
-            this.lbDefinition = new System.Windows.Forms.Label();
+            this.lbLabel = new System.Windows.Forms.Label();
             this.bCancel = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // rtbDefinition
+            // rtbContent
             // 
-            this.rtbDefinition.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.rtbContent.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.rtbDefinition.Location = new System.Drawing.Point(17, 25);
-            this.rtbDefinition.Name = "rtbDefinition";
-            this.rtbDefinition.Size = new System.Drawing.Size(563, 197);
-            this.rtbDefinition.TabIndex = 10;
-            this.rtbDefinition.Text = "";
+            this.rtbContent.Location = new System.Drawing.Point(17, 25);
+            this.rtbContent.Name = "rtbContent";
+            this.rtbContent.Size = new System.Drawing.Size(563, 197);
+            this.rtbContent.TabIndex = 10;
+            this.rtbContent.Text = "";
             // 
             // bOK
             // 
@@ -57,14 +57,14 @@
             this.bOK.Text = "OK";
             this.bOK.UseVisualStyleBackColor = true;
             // 
-            // lbDefinition
+            // lbLabel
             // 
-            this.lbDefinition.AutoSize = true;
-            this.lbDefinition.Location = new System.Drawing.Point(14, 9);
-            this.lbDefinition.Name = "lbDefinition";
-            this.lbDefinition.Size = new System.Drawing.Size(56, 13);
-            this.lbDefinition.TabIndex = 8;
-            this.lbDefinition.Text = "Example";
+            this.lbLabel.AutoSize = true;
+            this.lbLabel.Location = new System.Drawing.Point(14, 9);
+            this.lbLabel.Name = "lbLabel";
+            this.lbLabel.Size = new System.Drawing.Size(70, 21);
+            this.lbLabel.TabIndex = 8;
+            this.lbLabel.Text = "lbLabel";
             // 
             // bCancel
             // 
@@ -77,19 +77,19 @@
             this.bCancel.Text = "Cancel";
             this.bCancel.UseVisualStyleBackColor = true;
             // 
-            // EditExampleForm
+            // EditMultilineForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(597, 263);
-            this.Controls.Add(this.rtbDefinition);
+            this.Controls.Add(this.rtbContent);
             this.Controls.Add(this.bCancel);
             this.Controls.Add(this.bOK);
-            this.Controls.Add(this.lbDefinition);
+            this.Controls.Add(this.lbLabel);
             this.Font = new System.Drawing.Font("Verdana", 8.25F);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "EditExampleForm";
-            this.Text = "EditExampleForm";
+            this.Name = "EditMultilineForm";
+            this.Text = "EditMultilineForm";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -97,9 +97,9 @@
 
         #endregion
 
-        private System.Windows.Forms.RichTextBox rtbDefinition;
+        private System.Windows.Forms.RichTextBox rtbContent;
         private System.Windows.Forms.Button bOK;
-        private System.Windows.Forms.Label lbDefinition;
+        private System.Windows.Forms.Label lbLabel;
         private System.Windows.Forms.Button bCancel;
     }
 }

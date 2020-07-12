@@ -78,10 +78,10 @@ namespace AnkiLookup.UI.Forms
         {
             foreach (var word in words)
             {
-                for (int i = 0; i < word.Entries.Count; i++)
+                for (int index = 0; index < word.Entries.Count; index++)
                 {
-                    if (word.Entries[i].Definitions.Count == 0)
-                        word.Entries.RemoveAt(i);
+                    if (word.Entries[index].Definitions.Count == 0)
+                        word.Entries.RemoveAt(index);
                 }
             }
         }
@@ -199,6 +199,7 @@ namespace AnkiLookup.UI.Forms
                 _changeMade = false;
             }
         }
+
         private void tsmiLoadDataFile_Click(object sender, EventArgs e)
         {
             using (var dialog = new OpenFileDialog())
@@ -351,7 +352,24 @@ namespace AnkiLookup.UI.Forms
             _changeMade = true;
         }
 
-        private void tsmiEditWord_Click(object sender, EventArgs e)
+        private void tsmiAddWords_Click(object sender, EventArgs e)
+        {
+            using (var dialog = new EditMultilineForm("Words"))
+            {
+                if (dialog.ShowDialog() != DialogResult.OK || string.IsNullOrWhiteSpace(dialog.Content))
+                    return;
+
+                var words = dialog.Content.Split(Environment.NewLine.ToCharArray())
+                    .Select(x => x.Trim())
+                    .Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
+                for (int index = 0; index < words.Length; index++)
+                    lvWords.Items.Add(new WordViewItem(words[index]));
+                RefreshWordColumn();
+                _changeMade = true;
+            }
+        }
+
+        private void tsmiEditSelectedWord_Click(object sender, EventArgs e)
         {
             if (lvWords.SelectedItems.Count == 0)
                 return;
@@ -378,7 +396,7 @@ namespace AnkiLookup.UI.Forms
         private void lvWords_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             if (lvWords.SelectedItems.Count > 0)
-                tsmiEditWord_Click(null, null);
+                tsmiEditSelectedWord_Click(null, null);
         }
 
         public void RemoveItemByWord(Word word, bool monitorChangesMade)
@@ -429,7 +447,7 @@ namespace AnkiLookup.UI.Forms
                             if (!await Config.AnkiProvider.DeleteDeck(oldDeckName))
                                 throw new Exception($"Could not delete deck \"{oldDeckName}\".");
 
-                            MessageBox.Show("Successfully moved words.");
+                            MessageBox.Show($"Successfully renamed deck \"{oldDeckName}\" to \"{Deck.Name}\".");
                             return;
                         }
                     }

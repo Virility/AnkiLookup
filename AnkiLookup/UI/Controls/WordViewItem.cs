@@ -67,9 +67,8 @@ namespace AnkiLookup.UI.Controls
 
         public WordViewItem(string wordText)
         {
-            var word = new Word();
-            word.InputWord = wordText;
-            Word = word;
+            Word = new Word();
+            Word.InputWord = wordText;
 
             if (string.IsNullOrWhiteSpace(wordText))
                 SubItems[2].Text = "Adding";

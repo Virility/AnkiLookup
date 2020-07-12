@@ -185,11 +185,11 @@ namespace AnkiLookup.UI.Forms
                     deckViewItem.Refresh();
                     continue;
                 }
-                for (int i = 0; i < wordsToImport.Length; i++)
+                for (int index = 0; index < wordsToImport.Length; index++)
                 {
-                    var successfulWord = SuccessfulWords.FirstOrDefault(word => wordsToImport[i].InputWord == word.InputWord);
+                    var successfulWord = SuccessfulWords.FirstOrDefault(word => wordsToImport[index].InputWord == word.InputWord);
                     if (successfulWord != null)
-                        wordsToImport[i] = successfulWord;
+                        wordsToImport[index] = successfulWord;
                 }
 
                 sb.AppendLine($"Successfully imported {(ErrorWordStrings.Count == 0 ? "all" : "some")} words from deck \"{deck.Name}\".");

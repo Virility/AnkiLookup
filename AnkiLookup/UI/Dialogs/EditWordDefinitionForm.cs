@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using AnkiLookup.UI.Controls;
 using System;
+using System.Linq;
 
 namespace AnkiLookup.UI.Dialogs
 {
@@ -26,11 +27,19 @@ namespace AnkiLookup.UI.Dialogs
             Word.Entry entry;
             if (job == Job.Add)
             {
-                definitionViewItem.EntryIndex = 0;
-                definitionViewItem.DefinitionIndex = 0;
-             
-                entry = _word.Entries[definitionViewItem.EntryIndex];
-                entry.Label = cbLabel.Items[0].ToString();
+                if (_word.Entries.Count == 0)
+                {
+                    definitionViewItem.EntryIndex = 0;
+                    definitionViewItem.DefinitionIndex = 0;
+                    entry = new Word.Entry(_word.InputWord, cbLabel.Items[0].ToString());
+                    _word.Entries.Add(entry);
+                }
+                else
+                {
+                    definitionViewItem.EntryIndex = 0;
+                    entry = _word.Entries[definitionViewItem.EntryIndex];
+                    definitionViewItem.DefinitionIndex = entry.Definitions.Count;
+                }
                 entry.Definitions.Add(new Word.Block(string.Empty));
             }
             else
@@ -41,17 +50,6 @@ namespace AnkiLookup.UI.Dialogs
 
             cbLabel.SelectedItem = entry.Label;
             cbLabel.SelectedValueChanged += new EventHandler(cbLabel_SelectedValueChanged);
-        }
-
-        private void bOK_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(cbLabel.Text))
-            {
-                MessageBox.Show("A label must be selected to classify this word.");
-                return;
-            }
-
-            DialogResult = DialogResult.OK;
         }
 
         private (int entryIndex, int count) GetLabelInfo(string label)
@@ -68,7 +66,11 @@ namespace AnkiLookup.UI.Dialogs
 
         private void nudDefinitionIndex_ValueChanged(object sender, EventArgs e)
         {
-
+            //if (string.IsNullOrWhiteSpace(cbLabel.Text))
+            //{
+            //    MessageBox.Show("A label must be selected to classify this word.");
+            //    return;
+            //}
         }
 
         public static int RemoveDefinitionViewItem(DefinitionViewItem definitionViewItem)
@@ -111,10 +113,10 @@ namespace AnkiLookup.UI.Dialogs
             int GetLastDefinitionIndexFromEntryIndex(int entryIndex)
             {
                 var index = 0;
-                for (int i = 0; i < _word.Entries.Count; i++)
+                for (; index < _word.Entries.Count; index++)
                 {
-                    index += _word.Entries[i].Definitions.Count;
-                    if (i == entryIndex)
+                    index += _word.Entries[index].Definitions.Count;
+                    if (index == entryIndex)
                         break;
                 }
                 return index - 1;

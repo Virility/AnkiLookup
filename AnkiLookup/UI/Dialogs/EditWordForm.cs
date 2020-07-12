@@ -250,7 +250,7 @@ namespace AnkiLookup.UI.Dialogs
                     return;
                 }
                 definitionViewItem = lvDefinitions.SelectedItems[0] as DefinitionViewItem;
-                word = definitionViewItem.Word;
+                word = definitionViewItem.Word.Clone();
                 entryIndex = definitionViewItem.EntryIndex;
                 definitionIndex = definitionViewItem.EntryIndex;
             }
@@ -332,15 +332,15 @@ namespace AnkiLookup.UI.Dialogs
             var exampleViewItem = new ExampleViewItem(definitionViewItem, string.Empty);
             lvExamples.Items.Add(exampleViewItem);
 
-            using (var dialog = new EditExampleForm())
+            using (var dialog = new EditMultilineForm("Example"))
             {
-                if (dialog.ShowDialog() != DialogResult.OK || string.IsNullOrWhiteSpace(dialog.Example))
+                if (dialog.ShowDialog() != DialogResult.OK || string.IsNullOrWhiteSpace(dialog.Content))
                 {
                     lvExamples.Items.Remove(exampleViewItem);
                     return;
                 }
 
-                var examples = dialog.Example.Split(Environment.NewLine.ToCharArray())
+                var examples = dialog.Content.Split(Environment.NewLine.ToCharArray())
                     .Select(x => x.Trim())
                     .Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
 
@@ -366,14 +366,14 @@ namespace AnkiLookup.UI.Dialogs
 
             var exampleViewItem = lvExamples.SelectedItems[0] as ExampleViewItem;
 
-            using (var dialog = new EditExampleForm(exampleViewItem.SubItems[1].Text))
+            using (var dialog = new EditMultilineForm("Example", exampleViewItem.SubItems[1].Text))
             {
                 if (dialog.ShowDialog() != DialogResult.OK)
                     return;
-                if (string.IsNullOrWhiteSpace(dialog.Example))
+                if (string.IsNullOrWhiteSpace(dialog.Content))
                     return;
 
-                rtbOutput.Text = dialog.Example;
+                rtbOutput.Text = dialog.Content;
                 ChangeMade = true;
             }
         }

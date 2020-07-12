@@ -43,7 +43,7 @@
             // 
             this.tbWord.Location = new System.Drawing.Point(12, 26);
             this.tbWord.Name = "tbWord";
-            this.tbWord.Size = new System.Drawing.Size(203, 21);
+            this.tbWord.Size = new System.Drawing.Size(203, 24);
             this.tbWord.TabIndex = 9;
             // 
             // lbWord
@@ -51,7 +51,7 @@
             this.lbWord.AutoSize = true;
             this.lbWord.Location = new System.Drawing.Point(9, 9);
             this.lbWord.Name = "lbWord";
-            this.lbWord.Size = new System.Drawing.Size(36, 13);
+            this.lbWord.Size = new System.Drawing.Size(46, 17);
             this.lbWord.TabIndex = 8;
             this.lbWord.Text = "Word";
             // 
@@ -76,21 +76,20 @@
             this.bOK.TabIndex = 6;
             this.bOK.Text = "OK";
             this.bOK.UseVisualStyleBackColor = true;
-            this.bOK.Click += new System.EventHandler(this.bOK_Click);
             // 
             // lbDefinition
             // 
             this.lbDefinition.AutoSize = true;
             this.lbDefinition.Location = new System.Drawing.Point(9, 58);
             this.lbDefinition.Name = "lbDefinition";
-            this.lbDefinition.Size = new System.Drawing.Size(61, 13);
+            this.lbDefinition.Size = new System.Drawing.Size(74, 17);
             this.lbDefinition.TabIndex = 5;
             this.lbDefinition.Text = "Definition";
             // 
             // bCancel
             // 
             this.bCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.bCancel.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.bCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.bCancel.Location = new System.Drawing.Point(372, 262);
             this.bCancel.Name = "bCancel";
             this.bCancel.Size = new System.Drawing.Size(101, 23);
@@ -103,7 +102,7 @@
             this.lbLabel.AutoSize = true;
             this.lbLabel.Location = new System.Drawing.Point(218, 9);
             this.lbLabel.Name = "lbLabel";
-            this.lbLabel.Size = new System.Drawing.Size(37, 13);
+            this.lbLabel.Size = new System.Drawing.Size(44, 17);
             this.lbLabel.TabIndex = 11;
             this.lbLabel.Text = "Label";
             // 
@@ -113,18 +112,27 @@
             this.cbLabel.Items.AddRange(new object[] {
             "adjective",
             "adverb",
+            "conjunctions",
+            "determiners",
+            "exclamations",
+            "expression",
+            "idiom",
             "noun",
+            "phrase",
+            "prefix",
+            "prepositions",
+            "pronouns",
             "suffix",
             "verb"});
             this.cbLabel.Location = new System.Drawing.Point(221, 25);
             this.cbLabel.Name = "cbLabel";
-            this.cbLabel.Size = new System.Drawing.Size(203, 21);
+            this.cbLabel.Size = new System.Drawing.Size(203, 25);
             this.cbLabel.TabIndex = 13;
             this.cbLabel.Text = "adjective";
             // 
             // EditWordDefinitionForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(597, 291);
             this.Controls.Add(this.cbLabel);

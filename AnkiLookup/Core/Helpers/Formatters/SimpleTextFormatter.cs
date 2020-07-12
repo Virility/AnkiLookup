@@ -9,11 +9,11 @@ namespace AnkiLookup.Core.Helpers.Formatters
         {
             var sb = new StringBuilder();
 
-            for (var i = 0; i < word.Entries.Count; i++)
+            for (var index = 0; index < word.Entries.Count; index++)
             {
-                var entry = word.Entries[i];
+                var entry = word.Entries[index];
 
-                if (i != 0 && word.Entries.Count > 1 && word.Entries[i - 1].ActualWord != entry.ActualWord)
+                if (index != 0 && word.Entries.Count > 1 && word.Entries[index - 1].ActualWord != entry.ActualWord)
                     sb.AppendLine(entry.ActualWord);
 
                 if (!string.IsNullOrWhiteSpace(entry.Label))
