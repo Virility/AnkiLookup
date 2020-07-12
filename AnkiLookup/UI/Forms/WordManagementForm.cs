@@ -249,64 +249,46 @@ namespace AnkiLookup.UI.Forms
                 async wordViewItem => await LookUpWord(wordViewItem)));
         }
 
-        private void tsmiExportWordsForAnki_Click(object sender, EventArgs e)
+        private void tsmiExport_Click(object sender, EventArgs e)
         {
+            if (lvWords.Items.Count == 0)
+                return;
+
             using (var dialog = new FolderBrowserDialog())
             {
                 dialog.SelectedPath = AppDomain.CurrentDomain.BaseDirectory;
-
                 if (dialog.ShowDialog() != DialogResult.OK)
                     return;
-                if (lvWords.Items.Count == 0)
-                    return;
 
+                var senderName = (sender as ToolStripMenuItem).Name;
                 var entries = new List<string>();
                 foreach (WordViewItem wordViewItem in lvWords.Items)
                 {
-                    if (wordViewItem.Word.Entries.Count != 0)
-                        entries.Add(wordViewItem.Word.AsFormatted(Config.HtmlFormatter));
+                    if (senderName == "tsmiExportWordList")
+                        entries.Add(wordViewItem.Word.InputWord);
+                    else if (senderName == "tsmiExportWordsForAnki")
+                    {
+                        if (wordViewItem.Word.Entries.Count != 0)
+                            entries.Add(wordViewItem.Word.AsFormatted(Config.HtmlFormatter));
+                    }
                 }
                 var sortedEntries = entries.ToArray();
-                Array.Sort(sortedEntries, new OrdinalIgnoreCaseComparer());
-
-                var entriesBuilder = new StringBuilder();
-                foreach (var entry in sortedEntries)
-                    entriesBuilder.Append(entry);
-
-                if (entriesBuilder.Length > 2)
-                    entriesBuilder.Length -= 2;
-
-                rtbWordOutput.Text = entriesBuilder.ToString();
-                File.WriteAllText(Path.Combine(dialog.SelectedPath, "Words-AnkiImportReady.txt"), entriesBuilder.ToString());
-            }
-        }
-
-        private void tsmiExportWordList_Click(object sender, EventArgs e)
-        {
-            using (var dialog = new FolderBrowserDialog())
-            {
-                dialog.SelectedPath = AppDomain.CurrentDomain.BaseDirectory;
-
-                if (dialog.ShowDialog() != DialogResult.OK)
-                    return;
-                if (lvWords.Items.Count == 0)
-                    return;
-
-                var entries = new List<string>();
-                foreach (WordViewItem wordViewItem in lvWords.Items)
-                    entries.Add(wordViewItem.Word.InputWord);
-                var sortedEntries = entries.ToArray();
-                Array.Sort(sortedEntries, new OrdinalIgnoreCaseComparer());
+                Array.Sort(sortedEntries, Config.Comparer);
 
                 var entriesBuilder = new StringBuilder();
                 foreach (var entry in sortedEntries)
                     entriesBuilder.AppendLine(entry);
-
                 if (entriesBuilder.Length > 2)
                     entriesBuilder.Length -= 2;
-
                 rtbWordOutput.Text = entriesBuilder.ToString();
-                File.WriteAllText(Path.Combine(dialog.SelectedPath, "Words-WordList.txt"), entriesBuilder.ToString());
+
+                var fileName = "Words";
+                if (senderName == "tsmiExportWordList")
+                    fileName += "-WordList";
+                else if (senderName == "tsmiExportWordsForAnki")
+                    fileName += "-AnkiImportReady";
+                fileName = Path.Combine(dialog.SelectedPath, fileName + ".txt");
+                File.WriteAllText(fileName, entriesBuilder.ToString());
             }
         }
 

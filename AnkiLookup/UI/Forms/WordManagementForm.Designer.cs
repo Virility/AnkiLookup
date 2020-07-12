@@ -176,14 +176,14 @@ namespace AnkiLookup.UI.Forms
             this.tsmiExportWordsForAnki.Name = "tsmiExportWordsForAnki";
             this.tsmiExportWordsForAnki.Size = new System.Drawing.Size(192, 26);
             this.tsmiExportWordsForAnki.Text = "Words For Anki";
-            this.tsmiExportWordsForAnki.Click += new System.EventHandler(this.tsmiExportWordsForAnki_Click);
+            this.tsmiExportWordsForAnki.Click += new System.EventHandler(this.tsmiExport_Click);
             // 
             // tsmiExportWordList
             // 
             this.tsmiExportWordList.Name = "tsmiExportWordList";
             this.tsmiExportWordList.Size = new System.Drawing.Size(192, 26);
             this.tsmiExportWordList.Text = "Word List";
-            this.tsmiExportWordList.Click += new System.EventHandler(this.tsmiExportWordList_Click);
+            this.tsmiExportWordList.Click += new System.EventHandler(this.tsmiExport_Click);
             // 
             // tsmiAddWords
             // 
