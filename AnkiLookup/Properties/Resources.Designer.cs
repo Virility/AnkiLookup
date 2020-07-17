@@ -61,6 +61,17 @@ namespace AnkiLookup.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This word already exists in the database.
+        ///Would you like to add anyway?
+        ///Duplicates will not sync..
+        /// </summary>
+        internal static string AlreadyExistsInCorpusMessage {
+            get {
+                return ResourceManager.GetString("AlreadyExistsInCorpusMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;div class=&quot;blocks&quot;&gt;
         ///	{{Blocks}}
         ///&lt;/div&gt;.

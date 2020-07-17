@@ -11,16 +11,14 @@ using AnkiLookup.Core.Models;
 
 namespace AnkiLookup.Core.Providers
 {
-    public class CambridgeProvider : IDisposable 
+    public class CambridgeProvider : IDisposable, IDictionaryResolver
     {
         public CambridgeDataSet DataSet { get; set; }
 
         private readonly HttpClient _client;
 
-        public CambridgeProvider(CambridgeDataSet dataSet)
+        public CambridgeProvider()
         {
-            DataSet = dataSet;
-
             _client = new HttpClient();
             _client.BaseAddress = new Uri("http://dictionary.cambridge.org");
             _client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0");
@@ -36,7 +34,7 @@ namespace AnkiLookup.Core.Providers
             var parser = new HtmlParser();
             var document = parser.ParseDocument(response);
 
-            var dataSetSelector = "div.entry";//GetSelectorFromDataSet(DataSet);
+            var dataSetSelector = "div.entry";
             var dataSetElement = document.QuerySelector(dataSetSelector);
             if (dataSetElement == null)
                 return null;
@@ -52,17 +50,6 @@ namespace AnkiLookup.Core.Providers
             return word;
         }
 
-        //private static string GetSelectorFromDataSet(CambridgeDataSet dataSet)
-        //{
-        //    if (dataSet == CambridgeDataSet.British)
-        //        return "div#dataset-cald4";
-        //    if (dataSet == CambridgeDataSet.American)
-        //        return "div#dataset-cacd";
-        //    if (dataSet == CambridgeDataSet.Business)
-        //        return "div#dataset-business-english";
-        //    return string.Empty;
-        //}
-
         private static Word.Entry ParseEntryFromEntryElement(IParentNode entryElement)
         {
             var entry = new Word.Entry();
@@ -70,10 +57,10 @@ namespace AnkiLookup.Core.Providers
             var headWordElement = entryElement.QuerySelector(".headword > span.hw");
             if (headWordElement == null)
                 headWordElement = entryElement.QuerySelector(".headword > span.phrase");
-            if (headWordElement != null)
-                entry.ActualWord = headWordElement.TextContent;
-            else
+            if (headWordElement == null)
                 return null;
+            
+            entry.ActualWord = headWordElement.TextContent;
 
             var labelElement = entryElement.QuerySelector(".posgram > span.pos");
             if (labelElement != null)

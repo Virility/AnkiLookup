@@ -1,4 +1,5 @@
 ﻿using AnkiLookup.Core.Models;
+using AnkiLookup.Core.Providers;
 using AnkiLookup.UI.Controls;
 using Newtonsoft.Json;
 using System;

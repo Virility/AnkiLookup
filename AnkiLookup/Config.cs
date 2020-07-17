@@ -31,8 +31,16 @@ namespace AnkiLookup
         public static readonly IWordFormatter TextFormatter;
         public static readonly Comparer<string> Comparer;
 
+        public static Dictionary<string, IDictionaryResolver> Resolvers;
+
         static Config()
         {
+            Resolvers = new Dictionary<string, IDictionaryResolver>()
+            {
+                { "Cambridge", new CambridgeProvider() },
+                { "WordNet", new WordNetProvider() }
+            };
+
             AnkiProvider = new AnkiProvider(AnkiHost);
             HtmlFormatter = new HtmlFormatter();
             SimpleTextFormatter = new SimpleTextFormatter();

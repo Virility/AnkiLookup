@@ -5,7 +5,7 @@ namespace AnkiLookup.Core.Models
 {
     public class Deck
     {
-        public const string DefaultDecksPath = "Decks/";
+        public const string DefaultDecksPath = "Decks\\";
 
         public static Deck DefaultDeck = new Deck("Vocabulary");
 

@@ -13,26 +13,21 @@ namespace AnkiLookup.UI.Dialogs
 {
     public partial class EditWordForm : Form
     {
-        private readonly WordManagementForm _deckManagementForm;
+        private readonly WordManagementForm _wordManagementForm;
         private readonly string _titleFormat;
-        private readonly CambridgeProvider CambridgeProvider;
-        private readonly List<Word> _words;
         private bool _isCanceling;
-
-        public Job Job { get; set; }
+        private Job _job;
+        private Job _definitionJob = Job.None;
 
         public Word Word { get; internal set; }
 
         public bool ChangeMade { get; internal set; }
      
-        public EditWordForm(WordManagementForm deckManagementForm, Job job, CambridgeProvider cambridgeProvider,
-             Word word, ref List<Word> words)
+        public EditWordForm(WordManagementForm wordManagementForm, Job job, Word word)
         {
-            _deckManagementForm = deckManagementForm;
-            Job = job;
-            CambridgeProvider = cambridgeProvider;
+            _wordManagementForm = wordManagementForm;
+            _job = job;
             Word = word;
-            _words = words;
 
             InitializeComponent();
             Initialize();
@@ -42,7 +37,7 @@ namespace AnkiLookup.UI.Dialogs
         private void Initialize()
         {
             Text = "{0} Word - \"{1}\"";
-            bCancelOrDelete.Text = (Job == Job.Add) ? "Cancel" : "Delete";
+            bCancelOrDelete.Text = (_job == Job.Add) ? "Cancel" : "Delete";
         }
 
         private void RefreshWordUI()
@@ -90,15 +85,10 @@ namespace AnkiLookup.UI.Dialogs
                 return;
             }
 
-            var word = Word.InputWord.ToLower();
-            if (Job == Job.Add && ExistsInCorpus(word))
+            if (_job == Job.Add && _wordManagementForm.ExistsInCorpus(Word.InputWord, true))
             {
-                var dialogResult = MessageBox.Show(
-                    "This word already exists in the database.\n" +
-                    "Would you like to add anyway?\n" +
-                    "Duplicates will not sync."
-                    , Config.ApplicationName, MessageBoxButtons.YesNoCancel);
-                if (dialogResult == DialogResult.No || dialogResult == DialogResult.Cancel)
+                var dialogResult = MessageBox.Show(Properties.Resources.AlreadyExistsInCorpusMessage, Config.ApplicationName, MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.No)
                 {
                     DialogResult = DialogResult.Abort;
                     return;
@@ -117,21 +107,11 @@ namespace AnkiLookup.UI.Dialogs
         private void tbInputWord_TextChanged(object sender, EventArgs e)
         {
             var word = tbInputWord.Text.Trim().ToLower();
-            if (word.Length != 0)
-            {
-                Text = string.Format(_titleFormat, Job, word);
-                foundState.Visible = ExistsInCorpus(word);
-                Word.InputWord = word;
-            }
-        }
-
-        private bool ExistsInCorpus(string wordText)
-        {
-            var filtered = _words.ToList();
-            filtered.RemoveAt(0);
-            wordText = wordText.ToLower();
-            return filtered.Any(word => word.InputWord.ToLower() == wordText) ||
-                   filtered.Any(word => word.Entries.Any(entry => entry.ActualWord.ToLower() == wordText));
+            if (word.Length == 0)
+                return;
+            Word.InputWord = word;
+            Text = string.Format(_titleFormat, _job, word);
+            pFoundState.Visible = _wordManagementForm.ExistsInCorpus(word);
         }
 
         private void tbInputWord_KeyDown(object sender, KeyEventArgs e)
@@ -148,21 +128,28 @@ namespace AnkiLookup.UI.Dialogs
             var wordText = tbInputWord.Text.Trim().ToLower();
             try
             {
-                var word = await CambridgeProvider.GetWord(wordText);
-                if (word == null)
+                Word word;
+                foreach (var resolver in Config.Resolvers)
                 {
-                    MessageBox.Show($"\"{wordText}\" doesn't exist.");
-                    return;
+                    word = await resolver.Value.GetWord(wordText);
+                    if (word == null)
+                    {
+                        MessageBox.Show($"\"{wordText}\" doesn't exist in {resolver.Key}.");
+                        continue;
+                    }
+
+                    pFoundState.BackColor = Color.Green;
+                    pFoundState.Visible = true;
+
+                    Word = word;
+                    lvDefinitions.Items.Clear();
+                    lvExamples.Items.Clear();
+
+                    RefreshWordUI();
+                    ChangeMade = true;
                 }
-                foundState.BackColor = Color.Green;
-                foundState.Visible = true;
 
-                Word = word;
-                lvDefinitions.Items.Clear();
-                lvExamples.Items.Clear();
-
-                RefreshWordUI();
-                ChangeMade = true;
+                throw new Exception("Doesn't exist in any resolver database.");
             }
             catch (Exception exception)
             {
@@ -172,16 +159,16 @@ namespace AnkiLookup.UI.Dialogs
 
         private void bCopy_Click(object sender, EventArgs e)
         {
-            _deckManagementForm.CopiedWord = Word;
+            _wordManagementForm.CopiedWord = Word;
         }
 
         private void bPaste_Click(object sender, EventArgs e)
         {
-            if (_deckManagementForm.CopiedWord == null)
+            if (_wordManagementForm.CopiedWord == null)
                 return;
 
-            var pastedWord = _deckManagementForm.CopiedWord;
-            Word.Entries = pastedWord.Entries;
+            var copiedWord = _wordManagementForm.CopiedWord;
+            Word.Entries = copiedWord.Entries;
             ChangeMade = true;
 
             RefreshWordUI();
@@ -225,8 +212,7 @@ namespace AnkiLookup.UI.Dialogs
             ChangeMade = true;
         }
 
-        private Job _definitionJob = Job.None;
-        private void AddOrEdit(Job job)
+        private void AddOrEditDefinition(Job job)
         {
             DefinitionViewItem definitionViewItem = null;
 
@@ -293,17 +279,17 @@ namespace AnkiLookup.UI.Dialogs
 
         private void tsmiAddDefinition_Click(object sender, EventArgs e)
         {
-            AddOrEdit(Job.Add);
+            AddOrEditDefinition(Job.Add);
         }
 
         private void tsmiEditDefinition_Click(object sender, EventArgs e)
         {
-            AddOrEdit(Job.Edit);
+            AddOrEditDefinition(Job.Edit);
         }
 
         private void lvDefinitions_DoubleClick(object sender, EventArgs e)
         {
-            AddOrEdit(Job.Edit);
+            AddOrEditDefinition(Job.Edit);
         }
 
         private void tsmiDeleteDefinition_Click(object sender, EventArgs e)

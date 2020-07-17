@@ -37,8 +37,8 @@
             this.tsmiEditDefinition = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiDeleteDefinition = new System.Windows.Forms.ToolStripMenuItem();
             this.lvExamples = new System.Windows.Forms.ListView();
-            this.chExampleNumber = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.chExample = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.chExampleNumber = new System.Windows.Forms.ColumnHeader();
+            this.chExample = new System.Windows.Forms.ColumnHeader();
             this.cmsExamples = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tsmiAddExample = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiEditExample = new System.Windows.Forms.ToolStripMenuItem();
@@ -47,14 +47,14 @@
             this.bLookUp = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.lvDefinitions = new System.Windows.Forms.ListView();
-            this.chActualWord = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.chLabel = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.chExampleCount = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.chDefinition = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.chActualWord = new System.Windows.Forms.ColumnHeader();
+            this.chLabel = new System.Windows.Forms.ColumnHeader();
+            this.chExampleCount = new System.Windows.Forms.ColumnHeader();
+            this.chDefinition = new System.Windows.Forms.ColumnHeader();
             this.bCopy = new System.Windows.Forms.Button();
             this.bPaste = new System.Windows.Forms.Button();
             this.bCancelOrDelete = new System.Windows.Forms.Button();
-            this.foundState = new System.Windows.Forms.Panel();
+            this.pFoundState = new System.Windows.Forms.Panel();
             this.cmsEntries.SuspendLayout();
             this.cmsExamples.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -65,7 +65,7 @@
             this.lbInputWord.AutoSize = true;
             this.lbInputWord.Location = new System.Drawing.Point(12, 10);
             this.lbInputWord.Name = "lbInputWord";
-            this.lbInputWord.Size = new System.Drawing.Size(70, 13);
+            this.lbInputWord.Size = new System.Drawing.Size(89, 17);
             this.lbInputWord.TabIndex = 0;
             this.lbInputWord.Text = "Input Word";
             // 
@@ -73,7 +73,7 @@
             // 
             this.tbInputWord.Location = new System.Drawing.Point(15, 34);
             this.tbInputWord.Name = "tbInputWord";
-            this.tbInputWord.Size = new System.Drawing.Size(622, 21);
+            this.tbInputWord.Size = new System.Drawing.Size(723, 24);
             this.tbInputWord.TabIndex = 1;
             this.tbInputWord.TextChanged += new System.EventHandler(this.tbInputWord_TextChanged);
             this.tbInputWord.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbInputWord_KeyDown);
@@ -86,26 +86,26 @@
             this.tsmiEditDefinition,
             this.tsmiDeleteDefinition});
             this.cmsEntries.Name = "contextMenuStrip1";
-            this.cmsEntries.Size = new System.Drawing.Size(152, 70);
+            this.cmsEntries.Size = new System.Drawing.Size(177, 76);
             // 
             // tsmiAddDefinition
             // 
             this.tsmiAddDefinition.Name = "tsmiAddDefinition";
-            this.tsmiAddDefinition.Size = new System.Drawing.Size(151, 22);
+            this.tsmiAddDefinition.Size = new System.Drawing.Size(176, 24);
             this.tsmiAddDefinition.Text = "Add Definition";
             this.tsmiAddDefinition.Click += new System.EventHandler(this.tsmiAddDefinition_Click);
             // 
             // tsmiEditDefinition
             // 
             this.tsmiEditDefinition.Name = "tsmiEditDefinition";
-            this.tsmiEditDefinition.Size = new System.Drawing.Size(151, 22);
+            this.tsmiEditDefinition.Size = new System.Drawing.Size(176, 24);
             this.tsmiEditDefinition.Text = "Edit Definition";
             this.tsmiEditDefinition.Click += new System.EventHandler(this.tsmiEditDefinition_Click);
             // 
             // tsmiDeleteDefinition
             // 
             this.tsmiDeleteDefinition.Name = "tsmiDeleteDefinition";
-            this.tsmiDeleteDefinition.Size = new System.Drawing.Size(151, 22);
+            this.tsmiDeleteDefinition.Size = new System.Drawing.Size(176, 24);
             this.tsmiDeleteDefinition.Text = "Delete";
             this.tsmiDeleteDefinition.Click += new System.EventHandler(this.tsmiDeleteDefinition_Click);
             // 
@@ -120,7 +120,7 @@
             this.lvExamples.HideSelection = false;
             this.lvExamples.Location = new System.Drawing.Point(3, 143);
             this.lvExamples.Name = "lvExamples";
-            this.lvExamples.Size = new System.Drawing.Size(622, 136);
+            this.lvExamples.Size = new System.Drawing.Size(723, 136);
             this.lvExamples.TabIndex = 3;
             this.lvExamples.UseCompatibleStateImageBehavior = false;
             this.lvExamples.View = System.Windows.Forms.View.Details;
@@ -129,7 +129,7 @@
             // chExampleNumber
             // 
             this.chExampleNumber.Text = "Example #";
-            this.chExampleNumber.Width = 75;
+            this.chExampleNumber.Width = 100;
             // 
             // chExample
             // 
@@ -144,26 +144,26 @@
             this.tsmiEditExample,
             this.tsmiDeleteExample});
             this.cmsExamples.Name = "contextMenuStrip1";
-            this.cmsExamples.Size = new System.Drawing.Size(145, 70);
+            this.cmsExamples.Size = new System.Drawing.Size(168, 76);
             // 
             // tsmiAddExample
             // 
             this.tsmiAddExample.Name = "tsmiAddExample";
-            this.tsmiAddExample.Size = new System.Drawing.Size(144, 22);
+            this.tsmiAddExample.Size = new System.Drawing.Size(167, 24);
             this.tsmiAddExample.Text = "Add Example";
             this.tsmiAddExample.Click += new System.EventHandler(this.tsmiAddExample_Click);
             // 
             // tsmiEditExample
             // 
             this.tsmiEditExample.Name = "tsmiEditExample";
-            this.tsmiEditExample.Size = new System.Drawing.Size(144, 22);
+            this.tsmiEditExample.Size = new System.Drawing.Size(167, 24);
             this.tsmiEditExample.Text = "Edit Example";
             this.tsmiEditExample.Click += new System.EventHandler(this.tsmiEditExample_Click);
             // 
             // tsmiDeleteExample
             // 
             this.tsmiDeleteExample.Name = "tsmiDeleteExample";
-            this.tsmiDeleteExample.Size = new System.Drawing.Size(144, 22);
+            this.tsmiDeleteExample.Size = new System.Drawing.Size(167, 24);
             this.tsmiDeleteExample.Text = "Delete";
             this.tsmiDeleteExample.Click += new System.EventHandler(this.tsmiDeleteExample_Click);
             // 
@@ -173,13 +173,13 @@
             this.rtbOutput.Location = new System.Drawing.Point(3, 285);
             this.rtbOutput.Name = "rtbOutput";
             this.rtbOutput.ReadOnly = true;
-            this.rtbOutput.Size = new System.Drawing.Size(622, 131);
+            this.rtbOutput.Size = new System.Drawing.Size(723, 131);
             this.rtbOutput.TabIndex = 4;
             this.rtbOutput.Text = "";
             // 
             // bLookUp
             // 
-            this.bLookUp.Location = new System.Drawing.Point(319, 5);
+            this.bLookUp.Location = new System.Drawing.Point(420, 5);
             this.bLookUp.Name = "bLookUp";
             this.bLookUp.Size = new System.Drawing.Size(75, 23);
             this.bLookUp.TabIndex = 7;
@@ -203,7 +203,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.87978F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 32.51366F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(628, 419);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(729, 419);
             this.tableLayoutPanel1.TabIndex = 8;
             // 
             // lvDefinitions
@@ -219,7 +219,7 @@
             this.lvDefinitions.HideSelection = false;
             this.lvDefinitions.Location = new System.Drawing.Point(3, 3);
             this.lvDefinitions.Name = "lvDefinitions";
-            this.lvDefinitions.Size = new System.Drawing.Size(622, 134);
+            this.lvDefinitions.Size = new System.Drawing.Size(723, 134);
             this.lvDefinitions.TabIndex = 3;
             this.lvDefinitions.UseCompatibleStateImageBehavior = false;
             this.lvDefinitions.View = System.Windows.Forms.View.Details;
@@ -229,7 +229,7 @@
             // chActualWord
             // 
             this.chActualWord.Text = "Actual Word";
-            this.chActualWord.Width = 95;
+            this.chActualWord.Width = 140;
             // 
             // chLabel
             // 
@@ -239,7 +239,7 @@
             // chExampleCount
             // 
             this.chExampleCount.Text = "Example Count";
-            this.chExampleCount.Width = 100;
+            this.chExampleCount.Width = 140;
             // 
             // chDefinition
             // 
@@ -248,7 +248,7 @@
             // 
             // bCopy
             // 
-            this.bCopy.Location = new System.Drawing.Point(400, 5);
+            this.bCopy.Location = new System.Drawing.Point(501, 5);
             this.bCopy.Name = "bCopy";
             this.bCopy.Size = new System.Drawing.Size(75, 23);
             this.bCopy.TabIndex = 9;
@@ -258,7 +258,7 @@
             // 
             // bPaste
             // 
-            this.bPaste.Location = new System.Drawing.Point(481, 5);
+            this.bPaste.Location = new System.Drawing.Point(582, 5);
             this.bPaste.Name = "bPaste";
             this.bPaste.Size = new System.Drawing.Size(75, 23);
             this.bPaste.TabIndex = 10;
@@ -268,7 +268,7 @@
             // 
             // bCancelOrDelete
             // 
-            this.bCancelOrDelete.Location = new System.Drawing.Point(562, 5);
+            this.bCancelOrDelete.Location = new System.Drawing.Point(663, 5);
             this.bCancelOrDelete.Name = "bCancelOrDelete";
             this.bCancelOrDelete.Size = new System.Drawing.Size(75, 23);
             this.bCancelOrDelete.TabIndex = 11;
@@ -276,21 +276,21 @@
             this.bCancelOrDelete.UseVisualStyleBackColor = true;
             this.bCancelOrDelete.Click += new System.EventHandler(this.bCancelOrDelete_Click);
             // 
-            // foundState
+            // pFoundState
             // 
-            this.foundState.BackColor = System.Drawing.Color.Blue;
-            this.foundState.Location = new System.Drawing.Point(88, 12);
-            this.foundState.Name = "foundState";
-            this.foundState.Size = new System.Drawing.Size(184, 10);
-            this.foundState.TabIndex = 12;
-            this.foundState.Visible = false;
+            this.pFoundState.BackColor = System.Drawing.Color.Blue;
+            this.pFoundState.Location = new System.Drawing.Point(106, 14);
+            this.pFoundState.Name = "pFoundState";
+            this.pFoundState.Size = new System.Drawing.Size(184, 10);
+            this.pFoundState.TabIndex = 12;
+            this.pFoundState.Visible = false;
             // 
             // EditWordForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(652, 492);
-            this.Controls.Add(this.foundState);
+            this.ClientSize = new System.Drawing.Size(753, 492);
+            this.Controls.Add(this.pFoundState);
             this.Controls.Add(this.bCancelOrDelete);
             this.Controls.Add(this.bPaste);
             this.Controls.Add(this.bCopy);
@@ -298,7 +298,7 @@
             this.Controls.Add(this.bLookUp);
             this.Controls.Add(this.tbInputWord);
             this.Controls.Add(this.lbInputWord);
-            this.Font = new System.Drawing.Font("Verdana", 8.25F);
+            this.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "EditWordForm";
             this.Text = "{0} Word - \"{1}\"";
@@ -333,7 +333,7 @@
         private System.Windows.Forms.ToolStripMenuItem tsmiEditExample;
         private System.Windows.Forms.ToolStripMenuItem tsmiAddDefinition;
         private System.Windows.Forms.Button bCancelOrDelete;
-        private System.Windows.Forms.Panel foundState;
+        private System.Windows.Forms.Panel pFoundState;
         private System.Windows.Forms.ListView lvDefinitions;
         private System.Windows.Forms.ColumnHeader chActualWord;
         private System.Windows.Forms.ColumnHeader chLabel;

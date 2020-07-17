@@ -37,11 +37,11 @@
             this.tsmiManageSelected = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiDeleteSelected = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiImportToAnki = new System.Windows.Forms.ToolStripMenuItem();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this.lvDecks = new AnkiLookup.UI.Controls.WordListView();
-            this.chDeckName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.chCreated = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.chModified = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.chDeckName = new System.Windows.Forms.ColumnHeader();
+            this.chCreated = new System.Windows.Forms.ColumnHeader();
+            this.chModified = new System.Windows.Forms.ColumnHeader();
             this.cmsMain.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -54,6 +54,7 @@
             this.tsmiDeleteSelected,
             this.tsmiImportToAnki});
             this.cmsMain.Name = "cmsMain";
+            this.cmsMain.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
             this.cmsMain.Size = new System.Drawing.Size(236, 100);
             // 
             // tsmiAddDeck
@@ -114,7 +115,7 @@
             this.lvDecks.HideSelection = false;
             this.lvDecks.Location = new System.Drawing.Point(12, 12);
             this.lvDecks.Name = "lvDecks";
-            this.lvDecks.Size = new System.Drawing.Size(520, 321);
+            this.lvDecks.Size = new System.Drawing.Size(522, 329);
             this.lvDecks.TabIndex = 6;
             this.lvDecks.UseCompatibleStateImageBehavior = false;
             this.lvDecks.View = System.Windows.Forms.View.Details;
@@ -140,9 +141,9 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(544, 345);
+            this.ClientSize = new System.Drawing.Size(546, 353);
             this.Controls.Add(this.lvDecks);
-            this.Font = new System.Drawing.Font("Verdana", 8.25F);
+            this.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "DeckManagementForm";
             this.Text = "DeckManagementForm";

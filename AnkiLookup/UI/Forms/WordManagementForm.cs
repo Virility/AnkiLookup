@@ -17,13 +17,14 @@ namespace AnkiLookup.UI.Forms
 {
     public partial class WordManagementForm : Form
     {
+        private readonly int _maxConcurrentLookups = 10;
+        private bool _changeMade;
+
         public Word CopiedWord { get; set; }
 
         private readonly Deck _backupDeck;
-        public Deck Deck { get; set; }
 
-        private readonly int _maxConcurrentLookups = 10;
-        private bool _changeMade;
+        public Deck Deck { get; set; }
 
         public WordManagementForm(Deck deck)
         {
@@ -31,6 +32,7 @@ namespace AnkiLookup.UI.Forms
             _backupDeck = deck;
 
             InitializeComponent();
+            
             lvWords.ListViewItemSorter = new ListViewItemComparer(lvWords);
 
             InitializeAnkiStates();
@@ -101,7 +103,7 @@ namespace AnkiLookup.UI.Forms
                 _changeMade = true;
             }
 
-            Deck.ExportOption = rbText.Checked ? "Text" : "HTML";
+            Deck.ExportOption = rbText.Checked ? rbText.Text : rbHtml.Text;
             if (_backupDeck.ExportOption != Deck.ExportOption)
                 _changeMade = true;
 
@@ -111,9 +113,7 @@ namespace AnkiLookup.UI.Forms
                 return;
             }
 
-            var words = lvWords.Items.Cast<WordViewItem>()
-                .Select(wordViewItem => wordViewItem.Word)
-                .OrderBy(word => word.InputWord, Config.Comparer).ToArray();
+            var words = lvWords.GetAsWordList().OrderBy(word => word.InputWord, Config.Comparer).ToArray();
             RemoveEmptyEntries(words);
 
             Deck.DateModified = DateTime.Now;
@@ -133,10 +133,10 @@ namespace AnkiLookup.UI.Forms
                 return;
 
             var wordViewItem = lvWords.SelectedItems[0] as WordViewItem;
-            if ((wordViewItem.Word == null || wordViewItem.Word.Entries.Count == 0) && await LookUpWord(wordViewItem) == null)
-                return;
-
-            rtbWordOutput.Text = Config.TextFormatter.Render(wordViewItem.Word);
+            if (wordViewItem.Word != null && wordViewItem.Word.Entries.Count != 0 || await LookUpWord(wordViewItem) != null)
+                tsmiEditSelectedWord_Click(null, null);
+            else
+                rtbWordOutput.Text = Config.TextFormatter.Render(wordViewItem.Word);
         }
 
         private void lvWords_SelectedIndexChanged(object sender, EventArgs e)
@@ -213,40 +213,64 @@ namespace AnkiLookup.UI.Forms
             }
         }
 
-        private async Task<Word> LookUpWord(WordViewItem wordViewItem = null)
+        private async Task<Word> LookUpWord(WordViewItem wordViewItem = null, string resolverName = null)
         {
             var wordText = wordViewItem.Text.Trim().ToLower();
-            Word word = null;
+            var word = wordViewItem.Word;
+
             try
             {
-                word = await CambridgeProvider.GetWord(wordText);
-                if (word == null)
+                if (!string.IsNullOrWhiteSpace(resolverName))
                 {
-                    Invoke(new Action(() => wordViewItem.SubItems[2].Text = "Cannot find word."));
-                    Debug.WriteLine($"Error:: Word ({word}): Cannot find word.");
-                } else {
-                    Invoke(new Action(() => wordViewItem.Word = word));
-                    _changeMade = true;
-                    await Task.Delay(1000);
-                    return word;
+                    if (!Config.Resolvers.ContainsKey(resolverName))
+                        throw new Exception("Cannot find resolver by name.");
+
+                    var resolver = Config.Resolvers[resolverName];
+                    word = await resolver.GetWord(wordText);
+                    if (word != null)
+                        return await HandlePostResolveWordSuccess(word);
+
+                    Invoke(new Action(() => wordViewItem.SubItems[2].Text = $"Cannot find word in {resolverName}."));
                 }
+                else
+                {
+                    foreach (var resolver in Config.Resolvers)
+                    {
+                        word = await resolver.Value.GetWord(wordText);
+                        if (word != null)
+                            return await HandlePostResolveWordSuccess(word);
+                    }
+
+                    Invoke(new Action(() => wordViewItem.SubItems[2].Text = $"Cannot find word in any resolver."));
+                }
+
+                Debug.WriteLine($"Error:: Word ({word}): Cannot find word.");
             }
             catch (Exception exception)
             {
                 Debug.WriteLine($"Internal Error:: Word ({word}): {exception.Message}");
             }
             return null;
+
+            async Task<Word> HandlePostResolveWordSuccess(Word foundWord)
+            {
+                Invoke(new Action(() => wordViewItem.Word = foundWord));
+                _changeMade = true;
+                await Task.Delay(1000);
+                return foundWord;
+            }
         }
 
-        private async void tsmiGetDefinitionsFromCambridge_Click(object sender, EventArgs e)
+        private async void tsmiGetDefinitionsFrom_Click(object sender, EventArgs e)
         {
             if (lvWords.Items.Count == 0)
                 return;
 
-            var trackViewItems = lvWords.Items.Cast<WordViewItem>().ToArray()
+            var resolverName = (sender as Control).Text;
+            var trackViewItems = lvWords.GetAsWordViewItemList()
                 .Where(wordViewItem => wordViewItem.Word.Entries.Count == 0);
             await Task.Run(() => trackViewItems.ForEachAsync(_maxConcurrentLookups,
-                async wordViewItem => await LookUpWord(wordViewItem)));
+                async wordViewItem => await LookUpWord(wordViewItem, resolverName)));
         }
 
         private void tsmiExport_Click(object sender, EventArgs e)
@@ -312,9 +336,8 @@ namespace AnkiLookup.UI.Forms
         {
             var wordViewItem = new WordViewItem(string.Empty);
             lvWords.Items.Add(wordViewItem);
-            var words = lvWords.GetAsWordList();
 
-            using (var dialog = new EditWordForm(this, Job.Add, CambridgeProvider, wordViewItem.Word, ref words))
+            using (var dialog = new EditWordForm(this, Job.Add, wordViewItem.Word))
             {
                 if (dialog.ShowDialog() != DialogResult.OK)
                 {
@@ -341,12 +364,21 @@ namespace AnkiLookup.UI.Forms
                 if (dialog.ShowDialog() != DialogResult.OK || string.IsNullOrWhiteSpace(dialog.Content))
                     return;
 
-                var words = dialog.Content.Split(Environment.NewLine.ToCharArray())
-                    .Select(x => x.Trim())
-                    .Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
-                for (int index = 0; index < words.Length; index++)
+                var wordTexts = dialog.Content.Split(Environment.NewLine.ToCharArray())
+                    .Select(word => word.Trim())
+                    .Where(word => !string.IsNullOrWhiteSpace(word)).ToArray();
+                foreach (var wordText in wordTexts)
                 {
-                    var wordViewItem = new WordViewItem(words[index]);
+                    if (ExistsInCorpus(wordText))
+                    {
+                        var dialogResult = MessageBox.Show(Properties.Resources.AlreadyExistsInCorpusMessage, Config.ApplicationName, MessageBoxButtons.YesNo);
+                        if (dialogResult != DialogResult.Yes)
+                        {
+                            DialogResult = DialogResult.Abort;
+                            continue;
+                        }
+                    }
+                    var wordViewItem = new WordViewItem(wordText);
                     wordViewItem.Refresh();
                     lvWords.Items.Add(wordViewItem);
                 }
@@ -361,9 +393,7 @@ namespace AnkiLookup.UI.Forms
                 return;
 
             var wordViewItem = lvWords.SelectedItems[0] as WordViewItem;
-            var words = lvWords.GetAsWordList();
-
-            using (var dialog = new EditWordForm(this, Job.Edit, CambridgeProvider, wordViewItem.Word, ref words))
+            using (var dialog = new EditWordForm(this, Job.Edit, wordViewItem.Word))
             {
                 var dialogResult = dialog.ShowDialog();
                 if (dialogResult == DialogResult.Cancel)
@@ -377,12 +407,6 @@ namespace AnkiLookup.UI.Forms
             }
             rtbWordOutput.Text = Config.TextFormatter.Render(wordViewItem.Word);
             _changeMade = true;
-        }
-
-        private void lvWords_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            if (lvWords.SelectedItems.Count > 0)
-                tsmiEditSelectedWord_Click(null, null);
         }
 
         public void RemoveItemByWord(Word word, bool monitorChangesMade)
@@ -426,7 +450,7 @@ namespace AnkiLookup.UI.Forms
             {
                 if (e.KeyCode == Keys.Enter && tbDeckName.Text != Deck.Name)
                 {
-                    var importedWordsExists = lvWords.Items.Cast<WordViewItem>().Any(item => item.Word.ImportDate != default);
+                    var importedWordsExists = lvWords.GetAsWordList().Any(word => word.ImportDate != default);
                     if (importedWordsExists)
                     {
                         var dialogResult = MessageBox.Show("The entered deck name is different than the deck name in Anki. Would you like to move all imported cards under this new deck name?", Config.ApplicationName, MessageBoxButtons.YesNo);
@@ -463,6 +487,30 @@ namespace AnkiLookup.UI.Forms
             {
                 MessageBox.Show("Error: " + ex.Message);
             }
+        }
+
+        public bool ExistsInCorpus(string wordText, bool deleteFirst = false)
+        {
+            var words = lvWords.GetAsWordList();
+            if (deleteFirst)
+                words.RemoveAt(0);
+
+            return words.Any(word => word.InputWord.Equals(wordText, StringComparison.OrdinalIgnoreCase)) ||
+                   words.Any(word => word.Entries.Any(entry => entry.ActualWord.Equals(wordText, StringComparison.OrdinalIgnoreCase)));
+        }
+
+        private void tbDeckName_DoubleClick(object sender, EventArgs e)
+        {
+            var directory = Path.Combine(Config.ApplicationPath, Deck.FilePath);
+            if (!File.Exists(directory))
+                return;
+
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = "explorer",
+                Arguments = string.Format("/e, /select, \"{0}\"", directory)
+            };
+            Process.Start(startInfo);
         }
     }
 }

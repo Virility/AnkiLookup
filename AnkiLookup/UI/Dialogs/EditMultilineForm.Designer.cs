@@ -40,9 +40,9 @@
             this.rtbContent.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.rtbContent.Location = new System.Drawing.Point(17, 25);
+            this.rtbContent.Location = new System.Drawing.Point(17, 29);
             this.rtbContent.Name = "rtbContent";
-            this.rtbContent.Size = new System.Drawing.Size(563, 197);
+            this.rtbContent.Size = new System.Drawing.Size(563, 193);
             this.rtbContent.TabIndex = 10;
             this.rtbContent.Text = "";
             // 
@@ -62,7 +62,7 @@
             this.lbLabel.AutoSize = true;
             this.lbLabel.Location = new System.Drawing.Point(14, 9);
             this.lbLabel.Name = "lbLabel";
-            this.lbLabel.Size = new System.Drawing.Size(70, 21);
+            this.lbLabel.Size = new System.Drawing.Size(56, 17);
             this.lbLabel.TabIndex = 8;
             this.lbLabel.Text = "lbLabel";
             // 
@@ -86,7 +86,7 @@
             this.Controls.Add(this.bCancel);
             this.Controls.Add(this.bOK);
             this.Controls.Add(this.lbLabel);
-            this.Font = new System.Drawing.Font("Verdana", 8.25F);
+            this.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "EditMultilineForm";
             this.Text = "EditMultilineForm";

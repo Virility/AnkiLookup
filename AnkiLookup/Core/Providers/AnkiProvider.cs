@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
-using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -70,7 +69,6 @@ namespace AnkiLookup.Core.Providers
                 return false;
             }
         }
-
 
         public async Task<bool> MoveDeck(string oldDeckName, string newDeckName = null)
         {
@@ -141,7 +139,6 @@ namespace AnkiLookup.Core.Providers
                 query += " " + additionalQuery;
             return await FindCards(query).ConfigureAwait(false);
         }
-
 
         public async Task<List<long>> GetDeckNotes(string deckName, string additionalQuery = null)
         {
@@ -229,7 +226,6 @@ namespace AnkiLookup.Core.Providers
                 ids.Add((long)item);
             return ids;
         }
-
 
         private async Task<List<long>> FindNotes(string query)
         {

@@ -38,7 +38,9 @@ namespace AnkiLookup.UI.Forms
             this.cmsMain = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tsmiGetDefinitionsFrom = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiGetDefinitionsFromCambridge = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsmiGetDefinitionsFromWordNet = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiAddWord = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsmiAddWords = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiEditSelectedWord = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiDeleteSelectedWord = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiImports = new System.Windows.Forms.ToolStripMenuItem();
@@ -50,12 +52,11 @@ namespace AnkiLookup.UI.Forms
             this.tsmiExport = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiExportWordsForAnki = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiExportWordList = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsmiAddWords = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.lvWords = new AnkiLookup.UI.Controls.WordListView();
-            this.chWord = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.chImported = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.chData = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.chWord = new System.Windows.Forms.ColumnHeader();
+            this.chImported = new System.Windows.Forms.ColumnHeader();
+            this.chData = new System.Windows.Forms.ColumnHeader();
             this.rtbWordOutput = new System.Windows.Forms.RichTextBox();
             this.rbText = new System.Windows.Forms.RadioButton();
             this.rbHtml = new System.Windows.Forms.RadioButton();
@@ -77,12 +78,14 @@ namespace AnkiLookup.UI.Forms
             this.tsmiImports,
             this.tsmiExport});
             this.cmsMain.Name = "contextMenuStrip1";
-            this.cmsMain.Size = new System.Drawing.Size(224, 200);
+            this.cmsMain.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+            this.cmsMain.Size = new System.Drawing.Size(224, 172);
             // 
             // tsmiGetDefinitionsFrom
             // 
             this.tsmiGetDefinitionsFrom.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsmiGetDefinitionsFromCambridge});
+            this.tsmiGetDefinitionsFromCambridge,
+            this.tsmiGetDefinitionsFromWordNet});
             this.tsmiGetDefinitionsFrom.Name = "tsmiGetDefinitionsFrom";
             this.tsmiGetDefinitionsFrom.Size = new System.Drawing.Size(223, 24);
             this.tsmiGetDefinitionsFrom.Text = "Get Definitions From";
@@ -92,7 +95,13 @@ namespace AnkiLookup.UI.Forms
             this.tsmiGetDefinitionsFromCambridge.Name = "tsmiGetDefinitionsFromCambridge";
             this.tsmiGetDefinitionsFromCambridge.Size = new System.Drawing.Size(166, 26);
             this.tsmiGetDefinitionsFromCambridge.Text = "Cambridge";
-            this.tsmiGetDefinitionsFromCambridge.Click += new System.EventHandler(this.tsmiGetDefinitionsFromCambridge_Click);
+            this.tsmiGetDefinitionsFromCambridge.Click += new System.EventHandler(this.tsmiGetDefinitionsFrom_Click);
+            // 
+            // tsmiGetDefinitionsFromWordNet
+            // 
+            this.tsmiGetDefinitionsFromWordNet.Name = "tsmiGetDefinitionsFromWordNet";
+            this.tsmiGetDefinitionsFromWordNet.Size = new System.Drawing.Size(166, 26);
+            this.tsmiGetDefinitionsFromWordNet.Text = "WordNet";
             // 
             // tsmiAddWord
             // 
@@ -100,6 +109,13 @@ namespace AnkiLookup.UI.Forms
             this.tsmiAddWord.Size = new System.Drawing.Size(223, 24);
             this.tsmiAddWord.Text = "Add Word";
             this.tsmiAddWord.Click += new System.EventHandler(this.tsmiAddWord_Click);
+            // 
+            // tsmiAddWords
+            // 
+            this.tsmiAddWords.Name = "tsmiAddWords";
+            this.tsmiAddWords.Size = new System.Drawing.Size(223, 24);
+            this.tsmiAddWords.Text = "Add Words";
+            this.tsmiAddWords.Click += new System.EventHandler(this.tsmiAddWords_Click);
             // 
             // tsmiEditSelectedWord
             // 
@@ -185,13 +201,6 @@ namespace AnkiLookup.UI.Forms
             this.tsmiExportWordList.Text = "Word List";
             this.tsmiExportWordList.Click += new System.EventHandler(this.tsmiExport_Click);
             // 
-            // tsmiAddWords
-            // 
-            this.tsmiAddWords.Name = "tsmiAddWords";
-            this.tsmiAddWords.Size = new System.Drawing.Size(223, 24);
-            this.tsmiAddWords.Text = "Add Words";
-            this.tsmiAddWords.Click += new System.EventHandler(this.tsmiAddWords_Click);
-            // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -207,7 +216,7 @@ namespace AnkiLookup.UI.Forms
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 75F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(570, 438);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(780, 725);
             this.tableLayoutPanel1.TabIndex = 5;
             // 
             // lvWords
@@ -222,19 +231,18 @@ namespace AnkiLookup.UI.Forms
             this.lvWords.HideSelection = false;
             this.lvWords.Location = new System.Drawing.Point(3, 3);
             this.lvWords.Name = "lvWords";
-            this.lvWords.Size = new System.Drawing.Size(564, 322);
+            this.lvWords.Size = new System.Drawing.Size(774, 537);
             this.lvWords.TabIndex = 6;
             this.lvWords.UseCompatibleStateImageBehavior = false;
             this.lvWords.View = System.Windows.Forms.View.Details;
             this.lvWords.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.LvWords_ColumnClick);
             this.lvWords.SelectedIndexChanged += new System.EventHandler(this.lvWords_SelectedIndexChanged);
             this.lvWords.DoubleClick += new System.EventHandler(this.lvWords_DoubleClick);
-            this.lvWords.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lvWords_MouseDoubleClick);
             // 
             // chWord
             // 
             this.chWord.Text = "Word";
-            this.chWord.Width = 122;
+            this.chWord.Width = 140;
             // 
             // chImported
             // 
@@ -244,15 +252,15 @@ namespace AnkiLookup.UI.Forms
             // chData
             // 
             this.chData.Text = "Data";
-            this.chData.Width = 283;
+            this.chData.Width = 460;
             // 
             // rtbWordOutput
             // 
             this.rtbWordOutput.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rtbWordOutput.Location = new System.Drawing.Point(3, 331);
+            this.rtbWordOutput.Location = new System.Drawing.Point(3, 546);
             this.rtbWordOutput.Name = "rtbWordOutput";
             this.rtbWordOutput.ReadOnly = true;
-            this.rtbWordOutput.Size = new System.Drawing.Size(564, 104);
+            this.rtbWordOutput.Size = new System.Drawing.Size(774, 176);
             this.rtbWordOutput.TabIndex = 4;
             this.rtbWordOutput.Text = "";
             // 
@@ -261,9 +269,9 @@ namespace AnkiLookup.UI.Forms
             this.rbText.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.rbText.Appearance = System.Windows.Forms.Appearance.Button;
             this.rbText.Checked = true;
-            this.rbText.Location = new System.Drawing.Point(438, 456);
+            this.rbText.Location = new System.Drawing.Point(648, 743);
             this.rbText.Name = "rbText";
-            this.rbText.Size = new System.Drawing.Size(66, 21);
+            this.rbText.Size = new System.Drawing.Size(66, 24);
             this.rbText.TabIndex = 6;
             this.rbText.TabStop = true;
             this.rbText.Text = "Text";
@@ -274,9 +282,9 @@ namespace AnkiLookup.UI.Forms
             // 
             this.rbHtml.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.rbHtml.Appearance = System.Windows.Forms.Appearance.Button;
-            this.rbHtml.Location = new System.Drawing.Point(510, 456);
+            this.rbHtml.Location = new System.Drawing.Point(720, 743);
             this.rbHtml.Name = "rbHtml";
-            this.rbHtml.Size = new System.Drawing.Size(72, 21);
+            this.rbHtml.Size = new System.Drawing.Size(72, 24);
             this.rbHtml.TabIndex = 7;
             this.rbHtml.Text = "HTML";
             this.rbHtml.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -286,7 +294,7 @@ namespace AnkiLookup.UI.Forms
             // 
             this.lbDeckName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lbDeckName.AutoSize = true;
-            this.lbDeckName.Location = new System.Drawing.Point(12, 459);
+            this.lbDeckName.Location = new System.Drawing.Point(12, 746);
             this.lbDeckName.Name = "lbDeckName";
             this.lbDeckName.Size = new System.Drawing.Size(86, 17);
             this.lbDeckName.TabIndex = 8;
@@ -296,23 +304,24 @@ namespace AnkiLookup.UI.Forms
             // 
             this.tbDeckName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbDeckName.Location = new System.Drawing.Point(91, 456);
+            this.tbDeckName.Location = new System.Drawing.Point(104, 743);
             this.tbDeckName.Name = "tbDeckName";
-            this.tbDeckName.Size = new System.Drawing.Size(341, 24);
+            this.tbDeckName.Size = new System.Drawing.Size(538, 24);
             this.tbDeckName.TabIndex = 9;
+            this.tbDeckName.DoubleClick += new System.EventHandler(this.tbDeckName_DoubleClick);
             this.tbDeckName.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbDeckName_KeyDown);
             // 
             // WordManagementForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(594, 489);
+            this.ClientSize = new System.Drawing.Size(804, 776);
             this.Controls.Add(this.tbDeckName);
             this.Controls.Add(this.lbDeckName);
             this.Controls.Add(this.rbHtml);
             this.Controls.Add(this.rbText);
             this.Controls.Add(this.tableLayoutPanel1);
-            this.Font = new System.Drawing.Font("Verdana", 8.25F);
+            this.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "WordManagementForm";
             this.Text = "WordManagementForm";
@@ -352,5 +361,6 @@ namespace AnkiLookup.UI.Forms
         private System.Windows.Forms.ToolStripMenuItem tsmiDeleteSelectedWord;
         private System.Windows.Forms.ToolStripMenuItem tsmiImports;
         private System.Windows.Forms.ToolStripMenuItem tsmiAddWords;
+        private System.Windows.Forms.ToolStripMenuItem tsmiGetDefinitionsFromWordNet;
     }
 }

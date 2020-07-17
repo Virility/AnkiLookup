@@ -14,14 +14,7 @@ namespace AnkiLookup.UI.Forms
 {
     partial class WordManagementForm
     {
-        private static readonly CambridgeProvider CambridgeProvider;
-
-        static WordManagementForm()
-        {
-            CambridgeProvider = new CambridgeProvider(CambridgeDataSet.British);
-        }
-
-        private void SetWordCollectionImportDate(WordViewItem[] wordViewItems, DateTime importDate)
+        private void SetWordCollectionImportDate(ICollection<WordViewItem> wordViewItems, DateTime importDate)
         {
             void UpdateWordImportDate(WordViewItem wordViewItem)
             {
@@ -40,7 +33,7 @@ namespace AnkiLookup.UI.Forms
 
         private async void tsmiImportToAnki_Click(object sender, EventArgs e)
         {
-            var wordViewItemsToImport = lvWords.Items.Cast<WordViewItem>();
+            var wordViewItemsToImport = lvWords.GetAsWordViewItemList();
 
             var wordsToImport = wordViewItemsToImport.Select(wordViewItem => wordViewItem.Word).ToArray();
             (Word[] SuccessfulWords, List<string> ErrorWordStrings) = await DeckManagementForm.ImportDeck(Deck, wordsToImport);
@@ -65,7 +58,7 @@ namespace AnkiLookup.UI.Forms
 
         private void tsmiClearImportStates_Click(object sender, EventArgs e)
         {
-            SetWordCollectionImportDate(lvWords.Items.Cast<WordViewItem>().ToArray(), default);
+            SetWordCollectionImportDate(lvWords.GetAsWordViewItemList(), default);
         }
     }
 }
