@@ -39,6 +39,7 @@ namespace AnkiLookup.UI.Forms
             this.tsmiGetDefinitionsFrom = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiGetDefinitionsFromCambridge = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiGetDefinitionsFromWordNet = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsmiGetDefinitionsFromAll = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiAddWord = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiAddWords = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiEditSelectedWord = new System.Windows.Forms.ToolStripMenuItem();
@@ -79,55 +80,63 @@ namespace AnkiLookup.UI.Forms
             this.tsmiExport});
             this.cmsMain.Name = "contextMenuStrip1";
             this.cmsMain.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.cmsMain.Size = new System.Drawing.Size(224, 172);
+            this.cmsMain.Size = new System.Drawing.Size(385, 340);
             // 
             // tsmiGetDefinitionsFrom
             // 
             this.tsmiGetDefinitionsFrom.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsmiGetDefinitionsFromCambridge,
-            this.tsmiGetDefinitionsFromWordNet});
+            this.tsmiGetDefinitionsFromWordNet,
+            this.tsmiGetDefinitionsFromAll});
             this.tsmiGetDefinitionsFrom.Name = "tsmiGetDefinitionsFrom";
-            this.tsmiGetDefinitionsFrom.Size = new System.Drawing.Size(223, 24);
+            this.tsmiGetDefinitionsFrom.Size = new System.Drawing.Size(384, 48);
             this.tsmiGetDefinitionsFrom.Text = "Get Definitions From";
             // 
             // tsmiGetDefinitionsFromCambridge
             // 
             this.tsmiGetDefinitionsFromCambridge.Name = "tsmiGetDefinitionsFromCambridge";
-            this.tsmiGetDefinitionsFromCambridge.Size = new System.Drawing.Size(166, 26);
+            this.tsmiGetDefinitionsFromCambridge.Size = new System.Drawing.Size(331, 54);
             this.tsmiGetDefinitionsFromCambridge.Text = "Cambridge";
             this.tsmiGetDefinitionsFromCambridge.Click += new System.EventHandler(this.tsmiGetDefinitionsFrom_Click);
             // 
             // tsmiGetDefinitionsFromWordNet
             // 
             this.tsmiGetDefinitionsFromWordNet.Name = "tsmiGetDefinitionsFromWordNet";
-            this.tsmiGetDefinitionsFromWordNet.Size = new System.Drawing.Size(166, 26);
+            this.tsmiGetDefinitionsFromWordNet.Size = new System.Drawing.Size(331, 54);
             this.tsmiGetDefinitionsFromWordNet.Text = "WordNet";
+            // 
+            // tsmiGetDefinitionsFromAll
+            // 
+            this.tsmiGetDefinitionsFromAll.Name = "tsmiGetDefinitionsFromAll";
+            this.tsmiGetDefinitionsFromAll.Size = new System.Drawing.Size(331, 54);
+            this.tsmiGetDefinitionsFromAll.Text = "All";
+            this.tsmiGetDefinitionsFromAll.Click += new System.EventHandler(this.tsmiGetDefinitionsFrom_Click);
             // 
             // tsmiAddWord
             // 
             this.tsmiAddWord.Name = "tsmiAddWord";
-            this.tsmiAddWord.Size = new System.Drawing.Size(223, 24);
+            this.tsmiAddWord.Size = new System.Drawing.Size(384, 48);
             this.tsmiAddWord.Text = "Add Word";
             this.tsmiAddWord.Click += new System.EventHandler(this.tsmiAddWord_Click);
             // 
             // tsmiAddWords
             // 
             this.tsmiAddWords.Name = "tsmiAddWords";
-            this.tsmiAddWords.Size = new System.Drawing.Size(223, 24);
+            this.tsmiAddWords.Size = new System.Drawing.Size(384, 48);
             this.tsmiAddWords.Text = "Add Words";
             this.tsmiAddWords.Click += new System.EventHandler(this.tsmiAddWords_Click);
             // 
             // tsmiEditSelectedWord
             // 
             this.tsmiEditSelectedWord.Name = "tsmiEditSelectedWord";
-            this.tsmiEditSelectedWord.Size = new System.Drawing.Size(223, 24);
+            this.tsmiEditSelectedWord.Size = new System.Drawing.Size(384, 48);
             this.tsmiEditSelectedWord.Text = "Edit Selected Word";
             this.tsmiEditSelectedWord.Click += new System.EventHandler(this.tsmiEditSelectedWord_Click);
             // 
             // tsmiDeleteSelectedWord
             // 
             this.tsmiDeleteSelectedWord.Name = "tsmiDeleteSelectedWord";
-            this.tsmiDeleteSelectedWord.Size = new System.Drawing.Size(223, 24);
+            this.tsmiDeleteSelectedWord.Size = new System.Drawing.Size(384, 48);
             this.tsmiDeleteSelectedWord.Text = "Delete Selected Word";
             this.tsmiDeleteSelectedWord.Click += new System.EventHandler(this.tsmiDeleteSelectedWord_Click);
             // 
@@ -138,7 +147,7 @@ namespace AnkiLookup.UI.Forms
             this.tsmiImportToAnki,
             this.tsmiClearImportStates});
             this.tsmiImports.Name = "tsmiImports";
-            this.tsmiImports.Size = new System.Drawing.Size(223, 24);
+            this.tsmiImports.Size = new System.Drawing.Size(384, 48);
             this.tsmiImports.Text = "Import";
             // 
             // tsmiLoad
@@ -147,34 +156,34 @@ namespace AnkiLookup.UI.Forms
             this.tsmiLoadWordList,
             this.tsmiLoadDataFile});
             this.tsmiLoad.Name = "tsmiLoad";
-            this.tsmiLoad.Size = new System.Drawing.Size(219, 26);
+            this.tsmiLoad.Size = new System.Drawing.Size(436, 54);
             this.tsmiLoad.Text = "Load From";
             // 
             // tsmiLoadWordList
             // 
             this.tsmiLoadWordList.Name = "tsmiLoadWordList";
-            this.tsmiLoadWordList.Size = new System.Drawing.Size(154, 26);
+            this.tsmiLoadWordList.Size = new System.Drawing.Size(309, 54);
             this.tsmiLoadWordList.Text = "Word List";
             this.tsmiLoadWordList.Click += new System.EventHandler(this.tsmiLoadWordList_Click);
             // 
             // tsmiLoadDataFile
             // 
             this.tsmiLoadDataFile.Name = "tsmiLoadDataFile";
-            this.tsmiLoadDataFile.Size = new System.Drawing.Size(154, 26);
+            this.tsmiLoadDataFile.Size = new System.Drawing.Size(309, 54);
             this.tsmiLoadDataFile.Text = "Data File";
             this.tsmiLoadDataFile.Click += new System.EventHandler(this.tsmiLoadDataFile_Click);
             // 
             // tsmiImportToAnki
             // 
             this.tsmiImportToAnki.Name = "tsmiImportToAnki";
-            this.tsmiImportToAnki.Size = new System.Drawing.Size(219, 26);
+            this.tsmiImportToAnki.Size = new System.Drawing.Size(436, 54);
             this.tsmiImportToAnki.Text = "Import To Anki";
             this.tsmiImportToAnki.Click += new System.EventHandler(this.tsmiImportToAnki_Click);
             // 
             // tsmiClearImportStates
             // 
             this.tsmiClearImportStates.Name = "tsmiClearImportStates";
-            this.tsmiClearImportStates.Size = new System.Drawing.Size(219, 26);
+            this.tsmiClearImportStates.Size = new System.Drawing.Size(436, 54);
             this.tsmiClearImportStates.Text = "Clear Import States";
             this.tsmiClearImportStates.Click += new System.EventHandler(this.tsmiClearImportStates_Click);
             // 
@@ -184,20 +193,20 @@ namespace AnkiLookup.UI.Forms
             this.tsmiExportWordsForAnki,
             this.tsmiExportWordList});
             this.tsmiExport.Name = "tsmiExport";
-            this.tsmiExport.Size = new System.Drawing.Size(223, 24);
+            this.tsmiExport.Size = new System.Drawing.Size(384, 48);
             this.tsmiExport.Text = "Export";
             // 
             // tsmiExportWordsForAnki
             // 
             this.tsmiExportWordsForAnki.Name = "tsmiExportWordsForAnki";
-            this.tsmiExportWordsForAnki.Size = new System.Drawing.Size(192, 26);
+            this.tsmiExportWordsForAnki.Size = new System.Drawing.Size(387, 54);
             this.tsmiExportWordsForAnki.Text = "Words For Anki";
             this.tsmiExportWordsForAnki.Click += new System.EventHandler(this.tsmiExport_Click);
             // 
             // tsmiExportWordList
             // 
             this.tsmiExportWordList.Name = "tsmiExportWordList";
-            this.tsmiExportWordList.Size = new System.Drawing.Size(192, 26);
+            this.tsmiExportWordList.Size = new System.Drawing.Size(387, 54);
             this.tsmiExportWordList.Text = "Word List";
             this.tsmiExportWordList.Click += new System.EventHandler(this.tsmiExport_Click);
             // 
@@ -296,7 +305,7 @@ namespace AnkiLookup.UI.Forms
             this.lbDeckName.AutoSize = true;
             this.lbDeckName.Location = new System.Drawing.Point(12, 746);
             this.lbDeckName.Name = "lbDeckName";
-            this.lbDeckName.Size = new System.Drawing.Size(86, 17);
+            this.lbDeckName.Size = new System.Drawing.Size(178, 34);
             this.lbDeckName.TabIndex = 8;
             this.lbDeckName.Text = "Deck Name";
             // 
@@ -306,14 +315,14 @@ namespace AnkiLookup.UI.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tbDeckName.Location = new System.Drawing.Point(104, 743);
             this.tbDeckName.Name = "tbDeckName";
-            this.tbDeckName.Size = new System.Drawing.Size(538, 24);
+            this.tbDeckName.Size = new System.Drawing.Size(538, 41);
             this.tbDeckName.TabIndex = 9;
             this.tbDeckName.DoubleClick += new System.EventHandler(this.tbDeckName_DoubleClick);
             this.tbDeckName.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbDeckName_KeyDown);
             // 
             // WordManagementForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 17F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(17F, 32F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(804, 776);
             this.Controls.Add(this.tbDeckName);
@@ -362,5 +371,6 @@ namespace AnkiLookup.UI.Forms
         private System.Windows.Forms.ToolStripMenuItem tsmiImports;
         private System.Windows.Forms.ToolStripMenuItem tsmiAddWords;
         private System.Windows.Forms.ToolStripMenuItem tsmiGetDefinitionsFromWordNet;
+        private System.Windows.Forms.ToolStripMenuItem tsmiGetDefinitionsFromAll;
     }
 }

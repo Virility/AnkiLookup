@@ -65,7 +65,7 @@
             this.lbInputWord.AutoSize = true;
             this.lbInputWord.Location = new System.Drawing.Point(12, 10);
             this.lbInputWord.Name = "lbInputWord";
-            this.lbInputWord.Size = new System.Drawing.Size(89, 17);
+            this.lbInputWord.Size = new System.Drawing.Size(175, 34);
             this.lbInputWord.TabIndex = 0;
             this.lbInputWord.Text = "Input Word";
             // 
@@ -73,7 +73,7 @@
             // 
             this.tbInputWord.Location = new System.Drawing.Point(15, 34);
             this.tbInputWord.Name = "tbInputWord";
-            this.tbInputWord.Size = new System.Drawing.Size(723, 24);
+            this.tbInputWord.Size = new System.Drawing.Size(723, 41);
             this.tbInputWord.TabIndex = 1;
             this.tbInputWord.TextChanged += new System.EventHandler(this.tbInputWord_TextChanged);
             this.tbInputWord.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbInputWord_KeyDown);
@@ -86,26 +86,26 @@
             this.tsmiEditDefinition,
             this.tsmiDeleteDefinition});
             this.cmsEntries.Name = "contextMenuStrip1";
-            this.cmsEntries.Size = new System.Drawing.Size(177, 76);
+            this.cmsEntries.Size = new System.Drawing.Size(289, 148);
             // 
             // tsmiAddDefinition
             // 
             this.tsmiAddDefinition.Name = "tsmiAddDefinition";
-            this.tsmiAddDefinition.Size = new System.Drawing.Size(176, 24);
+            this.tsmiAddDefinition.Size = new System.Drawing.Size(288, 48);
             this.tsmiAddDefinition.Text = "Add Definition";
             this.tsmiAddDefinition.Click += new System.EventHandler(this.tsmiAddDefinition_Click);
             // 
             // tsmiEditDefinition
             // 
             this.tsmiEditDefinition.Name = "tsmiEditDefinition";
-            this.tsmiEditDefinition.Size = new System.Drawing.Size(176, 24);
+            this.tsmiEditDefinition.Size = new System.Drawing.Size(288, 48);
             this.tsmiEditDefinition.Text = "Edit Definition";
             this.tsmiEditDefinition.Click += new System.EventHandler(this.tsmiEditDefinition_Click);
             // 
             // tsmiDeleteDefinition
             // 
             this.tsmiDeleteDefinition.Name = "tsmiDeleteDefinition";
-            this.tsmiDeleteDefinition.Size = new System.Drawing.Size(176, 24);
+            this.tsmiDeleteDefinition.Size = new System.Drawing.Size(288, 48);
             this.tsmiDeleteDefinition.Text = "Delete";
             this.tsmiDeleteDefinition.Click += new System.EventHandler(this.tsmiDeleteDefinition_Click);
             // 
@@ -144,26 +144,26 @@
             this.tsmiEditExample,
             this.tsmiDeleteExample});
             this.cmsExamples.Name = "contextMenuStrip1";
-            this.cmsExamples.Size = new System.Drawing.Size(168, 76);
+            this.cmsExamples.Size = new System.Drawing.Size(271, 148);
             // 
             // tsmiAddExample
             // 
             this.tsmiAddExample.Name = "tsmiAddExample";
-            this.tsmiAddExample.Size = new System.Drawing.Size(167, 24);
+            this.tsmiAddExample.Size = new System.Drawing.Size(270, 48);
             this.tsmiAddExample.Text = "Add Example";
             this.tsmiAddExample.Click += new System.EventHandler(this.tsmiAddExample_Click);
             // 
             // tsmiEditExample
             // 
             this.tsmiEditExample.Name = "tsmiEditExample";
-            this.tsmiEditExample.Size = new System.Drawing.Size(167, 24);
+            this.tsmiEditExample.Size = new System.Drawing.Size(270, 48);
             this.tsmiEditExample.Text = "Edit Example";
             this.tsmiEditExample.Click += new System.EventHandler(this.tsmiEditExample_Click);
             // 
             // tsmiDeleteExample
             // 
             this.tsmiDeleteExample.Name = "tsmiDeleteExample";
-            this.tsmiDeleteExample.Size = new System.Drawing.Size(167, 24);
+            this.tsmiDeleteExample.Size = new System.Drawing.Size(270, 48);
             this.tsmiDeleteExample.Text = "Delete";
             this.tsmiDeleteExample.Click += new System.EventHandler(this.tsmiDeleteExample_Click);
             // 
@@ -287,7 +287,7 @@
             // 
             // EditWordForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 17F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(17F, 32F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(753, 492);
             this.Controls.Add(this.pFoundState);

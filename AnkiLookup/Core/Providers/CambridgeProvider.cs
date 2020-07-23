@@ -13,8 +13,6 @@ namespace AnkiLookup.Core.Providers
 {
     public class CambridgeProvider : IDisposable, IDictionaryResolver
     {
-        public CambridgeDataSet DataSet { get; set; }
-
         private readonly HttpClient _client;
 
         public CambridgeProvider()
@@ -54,12 +52,9 @@ namespace AnkiLookup.Core.Providers
         {
             var entry = new Word.Entry();
 
-            var headWordElement = entryElement.QuerySelector(".headword > span.hw");
-            if (headWordElement == null)
-                headWordElement = entryElement.QuerySelector(".headword > span.phrase");
+            var headWordElement = entryElement.QuerySelector(".headword > span.hw") ?? entryElement.QuerySelector(".headword > span.phrase") ;
             if (headWordElement == null)
                 return null;
-            
             entry.ActualWord = headWordElement.TextContent;
 
             var labelElement = entryElement.QuerySelector(".posgram > span.pos");

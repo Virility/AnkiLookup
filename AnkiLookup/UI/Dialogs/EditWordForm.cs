@@ -14,9 +14,10 @@ namespace AnkiLookup.UI.Dialogs
     public partial class EditWordForm : Form
     {
         private readonly WordManagementForm _wordManagementForm;
-        private readonly string _titleFormat;
+        private string _titleFormat;
         private bool _isCanceling;
-        private Job _job;
+        private string _inputWord;
+        private readonly Job _job;
         private Job _definitionJob = Job.None;
 
         public Word Word { get; internal set; }
@@ -31,13 +32,21 @@ namespace AnkiLookup.UI.Dialogs
 
             InitializeComponent();
             Initialize();
-            _titleFormat = Text;
         }
 
         private void Initialize()
         {
             Text = "{0} Word - \"{1}\"";
             bCancelOrDelete.Text = (_job == Job.Add) ? "Cancel" : "Delete";
+            _titleFormat = Text;
+            
+            if (_job == Job.Add && Clipboard.ContainsText(TextDataFormat.Text))
+            {
+                var clipboardText = Clipboard.GetText().Trim();
+                var words = clipboardText.Split(' ');
+                if (words.Length > 0 && words.Length <= 3)
+                    tbInputWord.Text = clipboardText;
+            }
         }
 
         private void RefreshWordUI()
@@ -52,7 +61,6 @@ namespace AnkiLookup.UI.Dialogs
             lvDefinitions.Items.AddRange(definitionViewItems.ToArray());
         }
 
-        private string _inputWord;
         private void EditWordForm_Load(object sender, EventArgs e)
         {
             _inputWord = Word.InputWord;
@@ -241,40 +249,38 @@ namespace AnkiLookup.UI.Dialogs
                 definitionIndex = definitionViewItem.EntryIndex;
             }
 
-            using (var dialog = new EditWordDefinitionForm(definitionViewItem, job))
+            using var dialog = new EditWordDefinitionForm(definitionViewItem, job);
+            var dialogResult = dialog.ShowDialog();
+
+            var condition = dialogResult != DialogResult.OK;
+            var condition2 = dialogResult == DialogResult.OK && string.IsNullOrWhiteSpace(dialog.Definition);
+
+            if (job == Job.Add && condition || condition2)
             {
-                var dialogResult = dialog.ShowDialog();
-
-                var condition = dialogResult != DialogResult.OK;
-                var condition2 = dialogResult == DialogResult.OK && string.IsNullOrWhiteSpace(dialog.Definition);
-
-                if (job == Job.Add && condition || condition2)
-                {
-                    lvDefinitions.Items.Remove(definitionViewItem);
-                    _definitionJob = Job.None;
-                    return;
-                }
-                else if (job == Job.Edit && condition)
-                {
-                    Word = definitionViewItem.Word = word;
-                    definitionViewItem.EntryIndex = entryIndex;
-                    definitionViewItem.DefinitionIndex = definitionIndex;
-                    definitionViewItem.Refresh();
-                    _definitionJob = Job.None;
-                    return;
-                }
-                else if (job == Job.Edit && condition2)
-                     RemoveDefinitionViewItem(ref definitionViewItem);
-                else
-                {
-                    var entry = Word.Entries[definitionViewItem.EntryIndex];
-                    var block = entry.Definitions[definitionViewItem.DefinitionIndex];
-                    block.Definition = dialog.Definition;
-                    definitionViewItem.Refresh();
-                }
-                ChangeMade = true;
+                lvDefinitions.Items.Remove(definitionViewItem);
                 _definitionJob = Job.None;
+                return;
             }
+            else if (job == Job.Edit && condition)
+            {
+                Word = definitionViewItem.Word = word;
+                definitionViewItem.EntryIndex = entryIndex;
+                definitionViewItem.DefinitionIndex = definitionIndex;
+                definitionViewItem.Refresh();
+                _definitionJob = Job.None;
+                return;
+            }
+            else if (job == Job.Edit && condition2)
+                RemoveDefinitionViewItem(ref definitionViewItem);
+            else
+            {
+                var entry = Word.Entries[definitionViewItem.EntryIndex];
+                var block = entry.Definitions[definitionViewItem.DefinitionIndex];
+                block.Definition = dialog.Definition;
+                definitionViewItem.Refresh();
+            }
+            ChangeMade = true;
+            _definitionJob = Job.None;
         }
 
         private void tsmiAddDefinition_Click(object sender, EventArgs e)
@@ -318,31 +324,29 @@ namespace AnkiLookup.UI.Dialogs
             var exampleViewItem = new ExampleViewItem(definitionViewItem, string.Empty);
             lvExamples.Items.Add(exampleViewItem);
 
-            using (var dialog = new EditMultilineForm("Example"))
+            using var dialog = new EditMultilineForm("Example");
+            if (dialog.ShowDialog() != DialogResult.OK || string.IsNullOrWhiteSpace(dialog.Content))
             {
-                if (dialog.ShowDialog() != DialogResult.OK || string.IsNullOrWhiteSpace(dialog.Content))
-                {
-                    lvExamples.Items.Remove(exampleViewItem);
-                    return;
-                }
-
-                var examples = dialog.Content.Split(Environment.NewLine.ToCharArray())
-                    .Select(x => x.Trim())
-                    .Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
-
-                for (int index = 0; index < examples.Length; index++)
-                {
-                    if (index == 0)
-                        exampleViewItem.Example = examples[0];
-                    else
-                    {
-                        exampleViewItem = new ExampleViewItem(definitionViewItem, examples[index]);
-                        lvExamples.Items.Add(exampleViewItem);
-                    }
-                }
-
-                ChangeMade = true;
+                lvExamples.Items.Remove(exampleViewItem);
+                return;
             }
+
+            var examples = dialog.Content.Split(Environment.NewLine.ToCharArray())
+                .Select(x => x.Trim())
+                .Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
+
+            for (int index = 0; index < examples.Length; index++)
+            {
+                if (index == 0)
+                    exampleViewItem.Example = examples[0];
+                else
+                {
+                    exampleViewItem = new ExampleViewItem(definitionViewItem, examples[index]);
+                    lvExamples.Items.Add(exampleViewItem);
+                }
+            }
+
+            ChangeMade = true;
         }
 
         private void tsmiEditExample_Click(object sender, EventArgs e)
@@ -352,16 +356,14 @@ namespace AnkiLookup.UI.Dialogs
 
             var exampleViewItem = lvExamples.SelectedItems[0] as ExampleViewItem;
 
-            using (var dialog = new EditMultilineForm("Example", exampleViewItem.SubItems[1].Text))
-            {
-                if (dialog.ShowDialog() != DialogResult.OK)
-                    return;
-                if (string.IsNullOrWhiteSpace(dialog.Content))
-                    return;
+            using var dialog = new EditMultilineForm("Example", exampleViewItem.SubItems[1].Text);
+            if (dialog.ShowDialog() != DialogResult.OK)
+                return;
+            if (string.IsNullOrWhiteSpace(dialog.Content))
+                return;
 
-                rtbOutput.Text = dialog.Content;
-                ChangeMade = true;
-            }
+            rtbOutput.Text = dialog.Content;
+            ChangeMade = true;
         }
 
         private void tsmiDeleteExample_Click(object sender, EventArgs e)

@@ -28,15 +28,13 @@ namespace AnkiLookup.UI.Forms
 
         public WordManagementForm(Deck deck)
         {
-            Deck = deck;
-            _backupDeck = deck;
-
             InitializeComponent();
-            
             lvWords.ListViewItemSorter = new ListViewItemComparer(lvWords);
 
+            Deck = deck;
+            _backupDeck = deck;
             InitializeAnkiStates();
-            LoadDataFile(deck.FilePath);
+            LoadDeck(deck);
         }
 
         private void WordManagementForm_Load(object sender, EventArgs e)
@@ -60,13 +58,10 @@ namespace AnkiLookup.UI.Forms
                 rbHtml.Checked = true;
         }
 
-        private void LoadDataFile(string fileName)
+        private void LoadDeck(Deck deck)
         {
-            if (!File.Exists(fileName))
-                return;
-
-            var words = DeckManagementForm.GetWordsFromDeck(Deck);
-            if (words.Length == 0)
+            var words = DeckManagementForm.GetWordsFromDeck(deck);
+            if (words == null || words.Length == 0)
                 return;
 
             var listViewItems = new List<WordViewItem>();
@@ -178,39 +173,35 @@ namespace AnkiLookup.UI.Forms
                 else if (dialogResult == DialogResult.Cancel)
                     return;
             }
-            using (var dialog = new OpenFileDialog())
+            using var dialog = new OpenFileDialog();
+            if (dialog.ShowDialog() != DialogResult.OK)
+                return;
+
+            var lines = File.ReadAllLines(dialog.FileName).Distinct().ToArray();
+            if (lines.Length == 0)
+                return;
+
+            var listViewItems = new List<WordViewItem>();
+            foreach (var line in lines)
             {
-                if (dialog.ShowDialog() != DialogResult.OK)
-                    return;
-
-                var lines = File.ReadAllLines(dialog.FileName).Distinct().ToArray();
-                if (lines.Length == 0)
-                    return;
-
-                var listViewItems = new List<WordViewItem>();
-                foreach (var line in lines)
-                {
-                    var word = line.Trim().ToLower();
-                    if (!lvWords.Items.ContainsKey(word))
-                        listViewItems.Add(new WordViewItem(line));
-                }
-                lvWords.Items.AddRange(listViewItems.ToArray());
-                RefreshWordColumn();
-                _changeMade = false;
+                var word = line.Trim().ToLower();
+                if (!lvWords.Items.ContainsKey(word))
+                    listViewItems.Add(new WordViewItem(line));
             }
+            lvWords.Items.AddRange(listViewItems.ToArray());
+            RefreshWordColumn();
+            _changeMade = false;
         }
 
         private void tsmiLoadDataFile_Click(object sender, EventArgs e)
         {
-            using (var dialog = new OpenFileDialog())
-            {
-                if (dialog.ShowDialog() != DialogResult.OK)
-                    return;
+            using var dialog = new OpenFileDialog();
+            if (dialog.ShowDialog() != DialogResult.OK)
+                return;
 
-                lvWords.Items.Clear();
-                LoadDataFile(dialog.FileName);
-                _changeMade = true;
-            }
+            lvWords.Items.Clear();
+            LoadDeck(Deck.FromFilePath(dialog.FileName));
+            _changeMade = true;
         }
 
         private async Task<Word> LookUpWord(WordViewItem wordViewItem = null, string resolverName = null)
@@ -220,7 +211,18 @@ namespace AnkiLookup.UI.Forms
 
             try
             {
-                if (!string.IsNullOrWhiteSpace(resolverName))
+                if (string.IsNullOrWhiteSpace(resolverName) && resolverName != "All")
+                {
+                    foreach (var resolver in Config.Resolvers)
+                    {
+                        word = await resolver.Value.GetWord(wordText);
+                        if (word != null)
+                            return await HandlePostResolveWordSuccess(word);
+                    }
+
+                    Invoke(new Action(() => wordViewItem.SubItems[2].Text = "Cannot find word in any resolver."));
+                }
+                else
                 {
                     if (!Config.Resolvers.ContainsKey(resolverName))
                         throw new Exception("Cannot find resolver by name.");
@@ -231,17 +233,6 @@ namespace AnkiLookup.UI.Forms
                         return await HandlePostResolveWordSuccess(word);
 
                     Invoke(new Action(() => wordViewItem.SubItems[2].Text = $"Cannot find word in {resolverName}."));
-                }
-                else
-                {
-                    foreach (var resolver in Config.Resolvers)
-                    {
-                        word = await resolver.Value.GetWord(wordText);
-                        if (word != null)
-                            return await HandlePostResolveWordSuccess(word);
-                    }
-
-                    Invoke(new Action(() => wordViewItem.SubItems[2].Text = $"Cannot find word in any resolver."));
                 }
 
                 Debug.WriteLine($"Error:: Word ({word}): Cannot find word.");
@@ -278,42 +269,40 @@ namespace AnkiLookup.UI.Forms
             if (lvWords.Items.Count == 0)
                 return;
 
-            using (var dialog = new FolderBrowserDialog())
+            using var dialog = new FolderBrowserDialog();
+            dialog.SelectedPath = AppDomain.CurrentDomain.BaseDirectory;
+            if (dialog.ShowDialog() != DialogResult.OK)
+                return;
+
+            var senderName = (sender as ToolStripMenuItem).Name;
+            var entries = new List<string>();
+            foreach (WordViewItem wordViewItem in lvWords.Items)
             {
-                dialog.SelectedPath = AppDomain.CurrentDomain.BaseDirectory;
-                if (dialog.ShowDialog() != DialogResult.OK)
-                    return;
-
-                var senderName = (sender as ToolStripMenuItem).Name;
-                var entries = new List<string>();
-                foreach (WordViewItem wordViewItem in lvWords.Items)
-                {
-                    if (senderName == "tsmiExportWordList")
-                        entries.Add(wordViewItem.Word.InputWord);
-                    else if (senderName == "tsmiExportWordsForAnki")
-                    {
-                        if (wordViewItem.Word.Entries.Count != 0)
-                            entries.Add(wordViewItem.Word.AsFormatted(Config.HtmlFormatter));
-                    }
-                }
-                var sortedEntries = entries.ToArray();
-                Array.Sort(sortedEntries, Config.Comparer);
-
-                var entriesBuilder = new StringBuilder();
-                foreach (var entry in sortedEntries)
-                    entriesBuilder.AppendLine(entry);
-                if (entriesBuilder.Length > 2)
-                    entriesBuilder.Length -= 2;
-                rtbWordOutput.Text = entriesBuilder.ToString();
-
-                var fileName = "Words";
                 if (senderName == "tsmiExportWordList")
-                    fileName += "-WordList";
+                    entries.Add(wordViewItem.Word.InputWord);
                 else if (senderName == "tsmiExportWordsForAnki")
-                    fileName += "-AnkiImportReady";
-                fileName = Path.Combine(dialog.SelectedPath, fileName + ".txt");
-                File.WriteAllText(fileName, entriesBuilder.ToString());
+                {
+                    if (wordViewItem.Word.Entries.Count != 0)
+                        entries.Add(wordViewItem.Word.AsFormatted(Config.HtmlFormatter));
+                }
             }
+            var sortedEntries = entries.ToArray();
+            Array.Sort(sortedEntries, Config.Comparer);
+
+            var entriesBuilder = new StringBuilder();
+            foreach (var entry in sortedEntries)
+                entriesBuilder.AppendLine(entry);
+            if (entriesBuilder.Length > 2)
+                entriesBuilder.Length -= 2;
+            rtbWordOutput.Text = entriesBuilder.ToString();
+
+            var fileName = "Words";
+            if (senderName == "tsmiExportWordList")
+                fileName += "-WordList";
+            else if (senderName == "tsmiExportWordsForAnki")
+                fileName += "-AnkiImportReady";
+            fileName = Path.Combine(dialog.SelectedPath, fileName + ".txt");
+            File.WriteAllText(fileName, entriesBuilder.ToString());
         }
 
         private void tsmiDeleteSelectedWord_Click(object sender, EventArgs e)
@@ -359,32 +348,30 @@ namespace AnkiLookup.UI.Forms
 
         private void tsmiAddWords_Click(object sender, EventArgs e)
         {
-            using (var dialog = new EditMultilineForm("Words"))
-            {
-                if (dialog.ShowDialog() != DialogResult.OK || string.IsNullOrWhiteSpace(dialog.Content))
-                    return;
+            using var dialog = new EditMultilineForm("Words");
+            if (dialog.ShowDialog() != DialogResult.OK || string.IsNullOrWhiteSpace(dialog.Content))
+                return;
 
-                var wordTexts = dialog.Content.Split(Environment.NewLine.ToCharArray())
-                    .Select(word => word.Trim())
-                    .Where(word => !string.IsNullOrWhiteSpace(word)).ToArray();
-                foreach (var wordText in wordTexts)
+            var wordTexts = dialog.Content.Split(Environment.NewLine.ToCharArray())
+                .Select(word => word.Trim())
+                .Where(word => !string.IsNullOrWhiteSpace(word)).ToArray();
+            foreach (var wordText in wordTexts)
+            {
+                if (ExistsInCorpus(wordText))
                 {
-                    if (ExistsInCorpus(wordText))
+                    var dialogResult = MessageBox.Show(Properties.Resources.AlreadyExistsInCorpusMessage, Config.ApplicationName, MessageBoxButtons.YesNo);
+                    if (dialogResult != DialogResult.Yes)
                     {
-                        var dialogResult = MessageBox.Show(Properties.Resources.AlreadyExistsInCorpusMessage, Config.ApplicationName, MessageBoxButtons.YesNo);
-                        if (dialogResult != DialogResult.Yes)
-                        {
-                            DialogResult = DialogResult.Abort;
-                            continue;
-                        }
+                        DialogResult = DialogResult.Abort;
+                        continue;
                     }
-                    var wordViewItem = new WordViewItem(wordText);
-                    wordViewItem.Refresh();
-                    lvWords.Items.Add(wordViewItem);
                 }
-                RefreshWordColumn();
-                _changeMade = true;
+                var wordViewItem = new WordViewItem(wordText);
+                wordViewItem.Refresh();
+                lvWords.Items.Add(wordViewItem);
             }
+            RefreshWordColumn();
+            _changeMade = true;
         }
 
         private void tsmiEditSelectedWord_Click(object sender, EventArgs e)
@@ -440,8 +427,7 @@ namespace AnkiLookup.UI.Forms
                 comparer.Column = e.Column;
             lvWords.Sorting = lvWords.Sorting == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
 
-            if (selectedListViewItem != null)
-                selectedListViewItem.EnsureVisible();
+            selectedListViewItem?.EnsureVisible();
         }
 
         private async void tbDeckName_KeyDown(object sender, KeyEventArgs e)
@@ -501,16 +487,7 @@ namespace AnkiLookup.UI.Forms
 
         private void tbDeckName_DoubleClick(object sender, EventArgs e)
         {
-            var directory = Path.Combine(Config.ApplicationPath, Deck.FilePath);
-            if (!File.Exists(directory))
-                return;
-
-            var startInfo = new ProcessStartInfo
-            {
-                FileName = "explorer",
-                Arguments = string.Format("/e, /select, \"{0}\"", directory)
-            };
-            Process.Start(startInfo);
+            FileOpener.Open(Path.Combine(Config.ApplicationPath, Deck.FilePath));
         }
     }
 }

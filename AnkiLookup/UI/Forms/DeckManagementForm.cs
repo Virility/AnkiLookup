@@ -1,5 +1,4 @@
 ﻿using AnkiLookup.Core.Models;
-using AnkiLookup.Core.Providers;
 using AnkiLookup.UI.Controls;
 using Newtonsoft.Json;
 using System;
@@ -90,18 +89,16 @@ namespace AnkiLookup.UI.Forms
 
         private void HandleDeckManagement(DeckViewItem deckViewItem)
         {
-            using (var deckManagementDialog = new WordManagementForm(deckViewItem.Deck))
-            {
-                Hide();
-                var dialogResult = deckManagementDialog.ShowDialog();
-                Show();
-                if (dialogResult != DialogResult.OK)
-                    return;
+            using var deckManagementDialog = new WordManagementForm(deckViewItem.Deck);
+            Hide();
+            var dialogResult = deckManagementDialog.ShowDialog();
+            Show();
+            if (dialogResult != DialogResult.OK)
+                return;
 
-                _changeMade = true;
-                deckViewItem.Deck = deckManagementDialog.Deck;
-                _lastOpenedDeckName = deckViewItem.Deck.Name;
-            }
+            _changeMade = true;
+            deckViewItem.Deck = deckManagementDialog.Deck;
+            _lastOpenedDeckName = deckViewItem.Deck.Name;
         }
 
         private void tsmiAddDeckNew_Click(object sender, EventArgs e)
@@ -115,18 +112,14 @@ namespace AnkiLookup.UI.Forms
 
         private void tsmiAddDeckFromFile_Click(object sender, EventArgs e)
         {
-            using (var dialog = new OpenFileDialog())
-            {
-                if (dialog.ShowDialog() != DialogResult.OK)
-                    return;
+            using var dialog = new OpenFileDialog();
+            if (dialog.ShowDialog() != DialogResult.OK)
+                return;
 
-                var deck = new Deck(Path.GetFileNameWithoutExtension(dialog.FileName), dialog.FileName);
-                var deckViewItem = new DeckViewItem(deck);
-                lvDecks.Items.Add(deckViewItem);
-
-                HandleDeckManagement(deckViewItem);
-                _changeMade = true;
-            }
+            var deckViewItem = new DeckViewItem(Deck.FromFilePath(dialog.FileName));
+            lvDecks.Items.Add(deckViewItem);
+            HandleDeckManagement(deckViewItem);
+            _changeMade = true;
         }
 
         private void tsmiManageSelected_Click(object sender, EventArgs e)
@@ -151,7 +144,7 @@ namespace AnkiLookup.UI.Forms
         {
             tsmiManageSelected_Click(this, null);
         }
-       
+
         private async void tsmiImportToAnki_Click(object sender, EventArgs e)
         {
             if (lvDecks.SelectedItems.Count == 0)
@@ -166,9 +159,11 @@ namespace AnkiLookup.UI.Forms
                 deckViewItem.SubItems[2].Text = "Importing..";
 
                 var deck = deckViewItem.Deck;
-                var wordsToImport = GetWordsFromDeck(deckViewItem.Deck);
+                var words = GetWordsFromDeck(deckViewItem.Deck);
+                if (words == null || words.Length == 0)
+                    continue;
 
-                (Word[] SuccessfulWords, List<string> ErrorWordStrings) = await ImportDeck(deck, wordsToImport);
+                (Word[] SuccessfulWords, List<string> ErrorWordStrings) = await ImportDeck(deck, words);
                 if (SuccessfulWords == null)
                 {
                     sb.AppendLine($"Failed importing all words from deck \"{deck.Name}\".");
@@ -186,23 +181,26 @@ namespace AnkiLookup.UI.Forms
                     deckViewItem.Refresh();
                     continue;
                 }
-                for (int index = 0; index < wordsToImport.Length; index++)
+                for (int index = 0; index < words.Length; index++)
                 {
-                    var successfulWord = SuccessfulWords.FirstOrDefault(word => wordsToImport[index].InputWord == word.InputWord);
+                    var successfulWord = SuccessfulWords.FirstOrDefault(word => words[index].InputWord == word.InputWord);
                     if (successfulWord != null)
-                        wordsToImport[index] = successfulWord;
+                        words[index] = successfulWord;
                 }
 
                 sb.AppendLine($"Successfully imported {(ErrorWordStrings.Count == 0 ? "all" : "some")} words from deck \"{deck.Name}\".");
                 if (ErrorWordStrings.Count != 0)
                 {
                     var plural = ErrorWordStrings.Count != 1 ? "s" : string.Empty;
-                    sb.AppendLine($"Error{plural}:\n{string.Join(Environment.NewLine, ErrorWordStrings)}.");
+                    sb.AppendLine($"Error{plural}:\n{string.Join(Environment.NewLine, ErrorWordStrings)}");
                 }
-                SaveDeck(deck, wordsToImport);
+                SaveDeck(deck, words);
                 deckViewItem.Refresh();
             }
             _changeMade = true;
+
+            if (sb.Length > 1)
+                sb.Length--;
             MessageBox.Show(sb.ToString());
 
             var date = startTime.ToString("G").Replace("/", "-").Replace(":", ".");
@@ -220,6 +218,9 @@ namespace AnkiLookup.UI.Forms
 
         public static Word[] GetWordsFromDeck(Deck deck)
         {
+            if (!File.Exists(deck.FilePath))
+                return null;
+
             var content = File.ReadAllText(deck.FilePath);
             return Word.Deserialize(content);
         }
@@ -253,7 +254,7 @@ namespace AnkiLookup.UI.Forms
             }
             return (null, null);
 
-            void SetWordCollectionImportDate(Word[] words, DateTime importDate)
+            static void SetWordCollectionImportDate(Word[] words, DateTime importDate)
             {
                 foreach (var word in words)
                     word.ImportDate = importDate;

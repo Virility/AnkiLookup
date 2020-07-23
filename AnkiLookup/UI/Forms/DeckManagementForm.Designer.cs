@@ -55,7 +55,7 @@
             this.tsmiImportToAnki});
             this.cmsMain.Name = "cmsMain";
             this.cmsMain.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-            this.cmsMain.Size = new System.Drawing.Size(236, 100);
+            this.cmsMain.Size = new System.Drawing.Size(410, 196);
             // 
             // tsmiAddDeck
             // 
@@ -63,41 +63,41 @@
             this.tsmiAddDeckNew,
             this.tsmiAddDeckFromFile});
             this.tsmiAddDeck.Name = "tsmiAddDeck";
-            this.tsmiAddDeck.Size = new System.Drawing.Size(235, 24);
+            this.tsmiAddDeck.Size = new System.Drawing.Size(409, 48);
             this.tsmiAddDeck.Text = "Add Deck";
             // 
             // tsmiAddDeckNew
             // 
             this.tsmiAddDeckNew.Name = "tsmiAddDeckNew";
-            this.tsmiAddDeckNew.Size = new System.Drawing.Size(153, 26);
+            this.tsmiAddDeckNew.Size = new System.Drawing.Size(306, 54);
             this.tsmiAddDeckNew.Text = "New";
             this.tsmiAddDeckNew.Click += new System.EventHandler(this.tsmiAddDeckNew_Click);
             // 
             // tsmiAddDeckFromFile
             // 
             this.tsmiAddDeckFromFile.Name = "tsmiAddDeckFromFile";
-            this.tsmiAddDeckFromFile.Size = new System.Drawing.Size(153, 26);
+            this.tsmiAddDeckFromFile.Size = new System.Drawing.Size(306, 54);
             this.tsmiAddDeckFromFile.Text = "From File";
             this.tsmiAddDeckFromFile.Click += new System.EventHandler(this.tsmiAddDeckFromFile_Click);
             // 
             // tsmiManageSelected
             // 
             this.tsmiManageSelected.Name = "tsmiManageSelected";
-            this.tsmiManageSelected.Size = new System.Drawing.Size(235, 24);
+            this.tsmiManageSelected.Size = new System.Drawing.Size(409, 48);
             this.tsmiManageSelected.Text = "Manage Selected";
             this.tsmiManageSelected.Click += new System.EventHandler(this.tsmiManageSelected_Click);
             // 
             // tsmiDeleteSelected
             // 
             this.tsmiDeleteSelected.Name = "tsmiDeleteSelected";
-            this.tsmiDeleteSelected.Size = new System.Drawing.Size(235, 24);
+            this.tsmiDeleteSelected.Size = new System.Drawing.Size(409, 48);
             this.tsmiDeleteSelected.Text = "Delete Selected";
             this.tsmiDeleteSelected.Click += new System.EventHandler(this.tsmiDeleteSelected_Click);
             // 
             // tsmiImportToAnki
             // 
             this.tsmiImportToAnki.Name = "tsmiImportToAnki";
-            this.tsmiImportToAnki.Size = new System.Drawing.Size(235, 24);
+            this.tsmiImportToAnki.Size = new System.Drawing.Size(409, 48);
             this.tsmiImportToAnki.Text = "Import Selected to Anki";
             this.tsmiImportToAnki.Click += new System.EventHandler(this.tsmiImportToAnki_Click);
             // 
@@ -139,7 +139,7 @@
             // 
             // DeckManagementForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 17F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(17F, 32F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(546, 353);
             this.Controls.Add(this.lvDecks);

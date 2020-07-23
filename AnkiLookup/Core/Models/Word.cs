@@ -8,16 +8,6 @@ namespace AnkiLookup.Core.Models
 {
     public class Word
     {
-        public static string Serialize(Word[] words)
-        {
-            return JsonConvert.SerializeObject(words, Config.JsonFormatting);
-        }
-
-        public static Word[] Deserialize(string content)
-        {
-            return JsonConvert.DeserializeObject<Word[]>(content);
-        }
-
         public class Entry
         {
             public string ActualWord { get; set; }
@@ -77,6 +67,16 @@ namespace AnkiLookup.Core.Models
             };
             cloned.Entries.AddRange(Entries);
             return cloned;
+        }
+
+        public static string Serialize(Word[] words)
+        {
+            return JsonConvert.SerializeObject(words, Config.JsonFormatting);
+        }
+
+        public static Word[] Deserialize(string content)
+        {
+            return JsonConvert.DeserializeObject<Word[]>(content);
         }
     }
 }
