@@ -163,11 +163,8 @@ namespace AnkiLookup.UI.Forms
         {
             if (lvWords.Items.Count > 0)
             {
-                var dialogResult = MessageBox.Show(
-                    "Do you want to start new?\n" +
-                    "-> Yes removes all previous words without saving.\n" +
-                    "-> No adds new words to existing list."
-                    , Config.ApplicationName, MessageBoxButtons.YesNoCancel);
+                var message = Properties.Resources.StartFreshDeckMessage;
+                var dialogResult = MessageBox.Show(message, Config.ApplicationName, MessageBoxButtons.YesNoCancel);
                 if (dialogResult == DialogResult.Yes)
                     lvWords.Items.Clear();
                 else if (dialogResult == DialogResult.Cancel)
@@ -440,7 +437,8 @@ namespace AnkiLookup.UI.Forms
                     var importedWordsExists = lvWords.GetAsWordList().Any(word => word.ImportDate != default);
                     if (importedWordsExists)
                     {
-                        var dialogResult = MessageBox.Show("The entered deck name is different than the deck name in Anki. Would you like to move all imported cards under this new deck name?", Config.ApplicationName, MessageBoxButtons.YesNo);
+                        var message = Properties.Resources.DifferentNewDeckNameMessage;
+                        var dialogResult = MessageBox.Show(message, Config.ApplicationName, MessageBoxButtons.YesNo);
                         if (dialogResult == DialogResult.Yes)
                         {
                             var oldDeckName = Deck.Name;
@@ -457,7 +455,8 @@ namespace AnkiLookup.UI.Forms
                     }
                     else
                     {
-                        var dialogResult = MessageBox.Show("No words are imported. Moving zero words is not possible. Would you like to import words under this new deck name?", Config.ApplicationName, MessageBoxButtons.YesNo);
+                        var message = Properties.Resources.NoWordsDeckNameMessage;
+                        var dialogResult = MessageBox.Show(message, Config.ApplicationName, MessageBoxButtons.YesNo);
                         if (dialogResult == DialogResult.OK)
                         {
                             Deck.Name = tbDeckName.Text;

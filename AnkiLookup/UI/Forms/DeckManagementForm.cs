@@ -266,8 +266,9 @@ namespace AnkiLookup.UI.Forms
 
                 var wordsToProcess = wordsToImport;
                 var existingIds = await Config.AnkiProvider.GetDeckNotes(deck.Name);
+                var message = Properties.Resources.DeckWithWordsExistMessage;
                 if (existingIds != null && existingIds.Count != 0 &&
-                    MessageBox.Show("Deck with words already exists in Anki. Do you want to reset the imported words? This will remove any deck progress.", Config.ApplicationName, MessageBoxButtons.YesNoCancel) == DialogResult.Yes)
+                    MessageBox.Show(message, Config.ApplicationName, MessageBoxButtons.YesNoCancel) == DialogResult.Yes)
                 {
                     checkIfExisting = false;
                     if (await Config.AnkiProvider.DeleteDeck(deck.Name))

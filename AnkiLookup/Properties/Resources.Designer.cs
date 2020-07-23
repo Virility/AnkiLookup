@@ -81,6 +81,24 @@ namespace AnkiLookup.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Deck with words already exists in Anki. Do you want to reset the imported words? This will remove any deck progress..
+        /// </summary>
+        internal static string DeckWithWordsExistMessage {
+            get {
+                return ResourceManager.GetString("DeckWithWordsExistMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The entered deck name is different than the deck name in Anki. Would you like to move all imported cards under this new deck name?.
+        /// </summary>
+        internal static string DifferentNewDeckNameMessage {
+            get {
+                return ResourceManager.GetString("DifferentNewDeckNameMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {{ActualWord}}
         ///&lt;div class=&quot;block&quot;&gt;
         ///	&lt;p class=&quot;label&quot;&gt;[{{Label}}]&lt;/p&gt;
@@ -166,6 +184,15 @@ namespace AnkiLookup.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No words are imported. Moving zero words is not possible. Would you like to import words under this new deck name?.
+        /// </summary>
+        internal static string NoWordsDeckNameMessage {
+            get {
+                return ResourceManager.GetString("NoWordsDeckNameMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;li class=&quot;scope&quot;&gt;
         ///	&lt;div class=&quot;definition-container&quot;&gt;
         ///		&lt;div class=&quot;definition&quot;&gt;{{Definition}}&lt;/div&gt;
@@ -176,6 +203,17 @@ namespace AnkiLookup.Properties {
         internal static string ScopeFormat {
             get {
                 return ResourceManager.GetString("ScopeFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you want to start new?
+        ///-&gt; Yes removes all previous words without saving.
+        ///-&gt; No adds new words to existing list..
+        /// </summary>
+        internal static string StartFreshDeckMessage {
+            get {
+                return ResourceManager.GetString("StartFreshDeckMessage", resourceCulture);
             }
         }
     }

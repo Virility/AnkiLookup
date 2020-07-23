@@ -1,5 +1,4 @@
 ﻿using AnkiLookup.Core.Models;
-using AnkiLookup.Core.Providers;
 using AnkiLookup.UI.Controls;
 using AnkiLookup.UI.Forms;
 using System;

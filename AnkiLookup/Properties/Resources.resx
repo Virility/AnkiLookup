@@ -125,6 +125,12 @@
 	{{Blocks}}
 &lt;/div&gt;</value>
   </data>
+  <data name="DeckWithWordsExistMessage" xml:space="preserve">
+    <value>Deck with words already exists in Anki. Do you want to reset the imported words? This will remove any deck progress.</value>
+  </data>
+  <data name="DifferentNewDeckNameMessage" xml:space="preserve">
+    <value>The entered deck name is different than the deck name in Anki. Would you like to move all imported cards under this new deck name?</value>
+  </data>
   <data name="EntryFormat" xml:space="preserve">
     <value>{{ActualWord}}
 &lt;div class="block"&gt;
@@ -273,6 +279,9 @@
   <data name="HtmlFront" xml:space="preserve">
     <value>&lt;div class="word"&gt;{{Front}}&lt;/div&gt;</value>
   </data>
+  <data name="NoWordsDeckNameMessage" xml:space="preserve">
+    <value>No words are imported. Moving zero words is not possible. Would you like to import words under this new deck name?</value>
+  </data>
   <data name="ScopeFormat" xml:space="preserve">
     <value>&lt;li class="scope"&gt;
 	&lt;div class="definition-container"&gt;
@@ -280,5 +289,10 @@
 	&lt;/div&gt;
 	&lt;div class="examples"&gt;{{Examples}}&lt;/div&gt;
 &lt;/li&gt;</value>
+  </data>
+  <data name="StartFreshDeckMessage" xml:space="preserve">
+    <value>Do you want to start new?
+-&gt; Yes removes all previous words without saving.
+-&gt; No adds new words to existing list.</value>
   </data>
 </root>
