@@ -359,7 +359,8 @@ namespace AnkiLookup.UI.Forms
             {
                 if (ExistsInCorpus(wordText))
                 {
-                    var dialogResult = MessageBox.Show(Properties.Resources.AlreadyExistsInCorpusMessage, Config.ApplicationName, MessageBoxButtons.YesNo);
+                    var message = Properties.Resources.AlreadyExistsInCorpusMessage.Replace("This word", $"\"{wordText}\"");
+                    var dialogResult = MessageBox.Show(message, Config.ApplicationName, MessageBoxButtons.YesNo);
                     if (dialogResult != DialogResult.Yes)
                     {
                         DialogResult = DialogResult.Abort;

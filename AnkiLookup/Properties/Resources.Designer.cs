@@ -61,9 +61,7 @@ namespace AnkiLookup.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This word already exists in the database.
-        ///Would you like to add anyway?
-        ///Duplicates will not sync..
+        ///   Looks up a localized string similar to This word already exists in the database. Duplicates will not sync. Would you like to add anyway?.
         /// </summary>
         internal static string AlreadyExistsInCorpusMessage {
             get {

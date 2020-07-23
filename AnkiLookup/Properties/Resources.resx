@@ -118,9 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AlreadyExistsInCorpusMessage" xml:space="preserve">
-    <value>This word already exists in the database.
-Would you like to add anyway?
-Duplicates will not sync.</value>
+    <value>This word already exists in the database. Duplicates will not sync. Would you like to add anyway?</value>
   </data>
   <data name="BlocksFormat" xml:space="preserve">
     <value>&lt;div class="blocks"&gt;
